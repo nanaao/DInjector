@@ -10,7 +10,7 @@ namespace DInjector
     class CurrentThread
     {
         delegate void FunctionPtr();
-        delegate void RunShellcode(IntPtr shellcodeAddress);
+        delegate void ExecuteShellcode(IntPtr shellcodeAddress);
 
         public static void Execute(byte[] shellcode, uint protect, uint timeout, int flipSleep, uint fluctuate, bool spoofStack, bool debug = false)
         {
@@ -106,7 +106,7 @@ namespace DInjector
                 DI.Data.Win32.WinNT.ACCESS_MASK.MAXIMUM_ALLOWED,
                 IntPtr.Zero,
                 hProcess,
-                new RunShellcode(ChopChop),
+                new ExecuteShellcode(Run),
                 baseAddress,
                 suspended,
                 0,
@@ -232,7 +232,7 @@ namespace DInjector
             Syscalls.NtClose(hThread);
         }
 
-        static void ChopChop(IntPtr shellcodeAddress)
+        static void Run(IntPtr shellcodeAddress)
         {
             FunctionPtr f = (FunctionPtr)Marshal.GetDelegateForFunctionPointer(shellcodeAddress, typeof(FunctionPtr));
             f();
