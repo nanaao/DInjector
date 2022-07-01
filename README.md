@@ -72,7 +72,7 @@ Features:
 1. Compile the project in Visual Studio (1) or via [OffensivePipeline](https://github.com/snovvcrash/OffensivePipeline) (2):
 
 ```console
-PS (1) > git clone https://github.com/snovvcrash/DInjector.git
+PS (1) > git clone -b dev --single-branch https://github.com/snovvcrash/DInjector.git
 PS (1) > cd DInjector/DInjector
 PS (1) > devenv /build Release DInjector.sln
 PS (1) > ls .\bin\Release\DInjector.dll
