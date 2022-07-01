@@ -55,6 +55,20 @@ namespace DInjector
             IntPtr attributeList);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate NTSTATUS NtCreateThreadExDelegate(
+            ref IntPtr threadHandle,
+            DI.Data.Win32.WinNT.ACCESS_MASK desiredAccess,
+            IntPtr objectAttributes,
+            IntPtr processHandle,
+            Delegate startAddress,
+            IntPtr parameter,
+            bool createSuspended,
+            int stackZeroBits,
+            int sizeOfStack,
+            int maximumStackSize,
+            IntPtr attributeList);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate NTSTATUS NtWaitForSingleObject(
             IntPtr ObjectHandle,
             bool Alertable,
@@ -167,6 +181,21 @@ namespace DInjector
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate NTSTATUS NtClose(IntPtr ObjectHandle);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate IntPtr ConvertThreadToFiber(IntPtr lpParameter);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate IntPtr CreateFiber(
+            uint dwStackSize,
+            Delegate lpStartAddress,
+            IntPtr lpParameter);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate void DeleteFiber(IntPtr lpFiber);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate void SwitchToFiber(IntPtr lpFiber);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate bool InitializeProcThreadAttributeList(

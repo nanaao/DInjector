@@ -29,6 +29,7 @@ Features:
 * PPID Spoofing and [block non-Microsoft DLLs](https://www.ired.team/offensive-security/defense-evasion/preventing-3rd-party-dlls-from-injecting-into-your-processes) (stolen from [TikiTorch](https://github.com/rasta-mouse/TikiTorch))
 * Flexible adjustment options for memory protection values
 * Shellcode fluctuation with **RW** and memory obfuscation (adopted from [ShellcodeFluctuation](https://github.com/mgeeky/ShellcodeFluctuation))
+* Thread stack spoofing via [fibers switching](https://docs.microsoft.com/ru-ru/windows/win32/api/winbase/nf-winbase-switchtofiber) (**NOT STABLE**)
 * Built-in AMSI bypass for local and remote processes, amsi.dll can be optionally force loaded
 * Simple sandbox detection & evasion
 * Prime numbers calculation to emulate sleep for in-memory scan evasion
@@ -128,7 +129,7 @@ $detonator = $detonator -creplace "var args = command.Split\(\);", "//var args =
 $detonator > .\Detonator.cs
 ```
 
-3. Compile the assembly and put it next to the Aggressor script.
+3. Compile the assembly to x64 and put it next to the Aggressor script.
 
 ![cs](https://user-images.githubusercontent.com/23141800/169656256-143f6cfa-0a33-4869-9bce-f7b1d58686e2.png)
 
@@ -142,6 +143,7 @@ $detonator > .\Detonator.cs
 | `/timeout`     | CurrentThread                                                                                                                                                                              | NO       | `0` (serve forever)    | `5000`                                                                            | Sets timeout for WaitForSingleObject (ms) for the injector to do extra cleanup afterwards.                                                                    |
 | `/flipSleep`   | CurrentThread                                                                                                                                                                              | NO       | `0` (do NOT flip)      | `10000`                                                                           | Sets time to sleep with PAGE_NOACCESS on shellcode (ms).                                                                                                      |
 | `/fluctuate`   | CurrentThread                                                                                                                                                                              | NO       | `0` (do NOT fluctuate) | `RW`                                                                              | Sets memory protection for the shellcode to fluctuate on Sleep with.                                                                                          |
+| `/spoofStack`  | CurrentThread                                                                                                                                                                              | NO       | `False`                | `True` / `False`                                                                  | Spoofs current thread stack frame to hide the presence of the shellcode.                                                                                      |
 | `/image`       | RemoteThreadKernelCB, RemoteThreadAPC, RemoteThreadContext, ProcessHollowing, ModuleStomping                                                                                               | YES      | -                      | `C:\Windows\System32\svchost.exe`, `C:\Program*Files\Mozilla*Firefox\firefox.exe` | Sets path to the image of a newly spawned sacrifical process to inject into. If there're spaces in the image path, replace them with asterisk (*) characters. |
 | `/pid`         | RemoteThread, RemoteThreadDll, RemoteThreadView, RemoteThreadSuspended                                                                                                                     | YES      | -                      | `1337`                                                                            | Sets existing process ID to inject into.                                                                                                                      |
 | `/ppid`        | RemoteThreadKernelCB, RemoteThreadAPC, RemoteThreadContext, ProcessHollowing, ModuleStomping                                                                                               | NO       | `0`                    | `1337`                                                                            | Sets parent process ID to spoof the original value with.                                                                                                      |
@@ -246,6 +248,7 @@ arguments: |
   /timeout:5000
   /flipSleep:10000
   /fluctuate:RW
+  /spoofStack:False
 description: |
   Injects shellcode into current process.
   Thread execution via NtCreateThreadEx (& NtResumeThread).

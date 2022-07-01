@@ -112,6 +112,25 @@ namespace DInjector
                 attributeList);
         }
 
+        public static NTSTATUS NtCreateThreadExDelegate(ref IntPtr threadHandle, DI.Data.Win32.WinNT.ACCESS_MASK desiredAccess, IntPtr objectAttributes, IntPtr processHandle, Delegate startAddress, IntPtr parameter, bool createSuspended, int stackZeroBits, int sizeOfStack, int maximumStackSize, IntPtr attributeList)
+        {
+            IntPtr stub = GetSyscallStub("ZwCreateThreadEx");
+            Delegates.NtCreateThreadExDelegate ntCreateThreadExDelegate = (Delegates.NtCreateThreadExDelegate)Marshal.GetDelegateForFunctionPointer(stub, typeof(Delegates.NtCreateThreadExDelegate));
+
+            return ntCreateThreadExDelegate(
+                ref threadHandle,
+                desiredAccess,
+                objectAttributes,
+                Process.GetCurrentProcess().Handle,
+                startAddress,
+                parameter,
+                createSuspended,
+                stackZeroBits,
+                sizeOfStack,
+                maximumStackSize,
+                attributeList);
+        }
+
         public static NTSTATUS NtWaitForSingleObject(IntPtr ObjectHandle, bool Alertable, uint Timeout)
         {
             IntPtr stub = GetSyscallStub("NtWaitForSingleObject");

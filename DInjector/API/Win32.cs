@@ -22,6 +22,34 @@ namespace DInjector
         [DllImport("kernel32.dll")]
         public static extern void Sleep(uint dwMilliseconds);
 
+        public static IntPtr ConvertThreadToFiber(IntPtr lpParameter)
+        {
+            object[] parameters = { lpParameter };
+            var result = (IntPtr)DynamicAPIInvoke("kernel32.dll", "ConvertThreadToFiber", typeof(Delegates.ConvertThreadToFiber), ref parameters);
+
+            return result;
+        }
+
+        public static IntPtr CreateFiber(uint dwStackSize, Delegate lpStartAddress, IntPtr lpParameter)
+        {
+            object[] parameters = { dwStackSize, lpStartAddress, lpParameter };
+            var result = (IntPtr)DynamicAPIInvoke("kernel32.dll", "CreateFiber", typeof(Delegates.CreateFiber), ref parameters);
+
+            return result;
+        }
+
+        public static void DeleteFiber(IntPtr lpFiber)
+        {
+            object[] parameters = { lpFiber };
+            _ = DynamicAPIInvoke("kernel32.dll", "DeleteFiber", typeof(Delegates.DeleteFiber), ref parameters);
+        }
+
+        public static void SwitchToFiber(IntPtr lpFiber)
+        {
+            object[] parameters = { lpFiber };
+            _ = DynamicAPIInvoke("kernel32.dll", "SwitchToFiber", typeof(Delegates.SwitchToFiber), ref parameters);
+        }
+
         public static bool InitializeProcThreadAttributeList(IntPtr lpAttributeList, int dwAttributeCount, ref IntPtr lpSize)
         {
             object[] parameters = { lpAttributeList, dwAttributeCount, 0, lpSize };
