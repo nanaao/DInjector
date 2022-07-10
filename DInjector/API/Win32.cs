@@ -38,16 +38,16 @@ namespace DInjector
             return result;
         }
 
-        public static void DeleteFiber(IntPtr lpFiber)
-        {
-            object[] parameters = { lpFiber };
-            _ = DynamicAPIInvoke("kernel32.dll", "DeleteFiber", typeof(Delegates.DeleteFiber), ref parameters);
-        }
-
         public static void SwitchToFiber(IntPtr lpFiber)
         {
             object[] parameters = { lpFiber };
             _ = DynamicAPIInvoke("kernel32.dll", "SwitchToFiber", typeof(Delegates.SwitchToFiber), ref parameters);
+        }
+
+        public static void DeleteFiber(IntPtr lpFiber)
+        {
+            object[] parameters = { lpFiber };
+            _ = DynamicAPIInvoke("kernel32.dll", "DeleteFiber", typeof(Delegates.DeleteFiber), ref parameters);
         }
 
         public static bool InitializeProcThreadAttributeList(IntPtr lpAttributeList, int dwAttributeCount, ref IntPtr lpSize)
@@ -387,6 +387,17 @@ namespace DInjector
             public IntPtr fnGETWINDOWDATA;
             public IntPtr fnINOUTSTYLECHANGE2;
             public IntPtr fnHkINLPMOUSEHOOKSTRUCTEX2;
+        }
+
+        // https://github.com/vxunderground/VXUG-Papers/blob/c3bd670c45223baf0af8bfb795d688a104cd0197/Hells%20Gate/C%23%20Implementation/SharpHellsGate/Win32/Structures.cs#L121-L126
+        // https://gist.github.com/gigajew/26ad60ea4167341407c064888dba8bf3#file-ntdonutloader-cs-L122-L149
+        // https://stackoverflow.com/a/683810/6253579
+        [StructLayout(LayoutKind.Explicit, Size = 1)]
+        public struct LARGE_INTEGER
+        {
+            [FieldOffset(0)] public Int64 QuadPart;
+            [FieldOffset(0)] public UInt32 LowPart;
+            [FieldOffset(4)] public UInt32 HighPart;
         }
 
         public const uint WM_COPYDATA = 0x4A;

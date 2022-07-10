@@ -140,8 +140,8 @@ $detonator > .\Detonator.cs
 | `/sc`          | All                                                                                                                                                                                        | YES      | -                      | `http://10.10.13.37/enc`                                                          | Sets shellcode path (can be loaded from URL or as a base64 string).                                                                                           |
 | `/p`           | All                                                                                                                                                                                        | YES      | -                      | `Passw0rd!`                                                                       | Sets password to decrypt the shellcode.                                                                                                                       |
 | `/protect`     | CurrentThread                                                                                                                                                                              | NO       | `RX`                   | `RX` / `RWX`                                                                      | Sets memory protection for the shellcode.                                                                                                                     |
-| `/timeout`     | CurrentThread                                                                                                                                                                              | NO       | `0` (serve forever)    | `5000`                                                                            | Sets timeout for WaitForSingleObject (ms) for the injector to do extra cleanup afterwards.                                                                    |
-| `/flipSleep`   | CurrentThread                                                                                                                                                                              | NO       | `0` (do NOT flip)      | `10000`                                                                           | Sets time to sleep with PAGE_NOACCESS on shellcode (ms).                                                                                                      |
+| `/flipSleep`   | CurrentThread                                                                                                                                                                              | NO       | `0` (do NOT flip)      | `10000`                                                                           | Sets timeout for NtDelayExecution (ms) to delay execution with PAGE_NOACCESS on the shellcode before resuming the thread.                                     |
+| `/timeout`     | CurrentThread                                                                                                                                                                              | NO       | `0` (serve forever)    | `5000`                                                                            | Sets timeout for NtWaitForSingleObject (ms) to wait before doing extra cleanup.                                                                               |
 | `/fluctuate`   | CurrentThread                                                                                                                                                                              | NO       | `0` (do NOT fluctuate) | `RW`                                                                              | Sets memory protection for the shellcode to fluctuate on Sleep with.                                                                                          |
 | `/spoofStack`  | CurrentThread                                                                                                                                                                              | NO       | `False`                | `True` / `False`                                                                  | Spoofs current thread stack frame to hide the presence of the shellcode.                                                                                      |
 | `/image`       | RemoteThreadKernelCB, RemoteThreadAPC, RemoteThreadContext, ProcessHollowing, ModuleStomping                                                                                               | YES      | -                      | `C:\Windows\System32\svchost.exe`, `C:\Program*Files\Mozilla*Firefox\firefox.exe` | Sets path to the image of a newly spawned sacrifical process to inject into. If there're spaces in the image path, replace them with asterisk (*) characters. |
@@ -245,8 +245,8 @@ references:
 module_name: 'currentthread'
 arguments: |
   /protect:RX
-  /timeout:5000
   /flipSleep:10000
+  /timeout:5000
   /fluctuate:RW
   /spoofStack:False
 description: |
@@ -254,35 +254,35 @@ description: |
   Thread execution via NtCreateThreadEx (& NtResumeThread).
 api:
   - dynamic_invocation:
-    1: '[TIMEOUT] WaitForSingleObject'
   - syscalls:
-    1: 'NtAllocateVirtualMemory (allocProtect)'
-    2: 'NtProtectVirtualMemory (newProtect)'
-    3: 'NtCreateThreadEx'
-    4: '[FLIPSLEEP] NtProtectVirtualMemory (protect)'
-    5: '[FLIPSLEEP] NtResumeThread'
-    6: '[TIMEOUT] NtProtectVirtualMemory (PAGE_READWRITE)'
-    7: '[TIMEOUT] NtFreeVirtualMemory (shellcode)'
-    8: 'NtWaitForSingleObject'
-    9: 'NtClose'
+     1: 'NtAllocateVirtualMemory (allocProtect)'
+     2: 'NtProtectVirtualMemory (newProtect)'
+     3: 'NtCreateThreadEx'
+     4: '[FLIPSLEEP] NtDelayExecution (flipSleep)'
+     5: '[FLIPSLEEP] NtProtectVirtualMemory (protect)'
+     6: '[FLIPSLEEP] NtResumeThread'
+     7: '[TIMEOUT] NtWaitForSingleObject (timeout)'
+     8: '[TIMEOUT] NtProtectVirtualMemory (PAGE_READWRITE)'
+     9: '[TIMEOUT] NtFreeVirtualMemory (shellcode)'
+    10: 'NtWaitForSingleObject (inf)'
+    11: 'NtClose'
 opsec_safe: false
 references:
   - 'https://github.com/XingYun-Cloud/D-Invoke-syscall/blob/main/Program.cs'
+  - 'https://github.com/phra/PEzor/blob/4973de7c2d223c974d251dd1ff463c069fdd1c22/inject.cpp#L84'
   - 'https://github.com/mgeeky/ShellcodeFluctuation/blob/master/ShellcodeFluctuation/main.cpp'
 ```
 
 :information_source: **Notes:**
 
 * When using 3rd-party loader-independent encoders which require R**W**X memory to decode the shellcode (like [sgn](https://github.com/EgeBalci/sgn), available via `--sgn` switch in [`encrypt.py`](encrypt.py)), you can use the `/protect` option to set **RWX** (PAGE_EXECUTE_READWRITE, `0x40`) value on the memory region where the shellcode resides. Default protection is **RX** (PAGE_EXECUTE_READ, `0x20`).
-* Some C2 implants (like meterpreter and [PoshC2](https://github.com/nettitude/PoshC2) but not Cobalt Strike, for example) allow to clean up the memory region where the initial shellcode was triggered from without terminating the active session. For that purpose the `/timeout` option exists: when its value is non-zero, the operator forces the `WaitForSingleObject` API call to time out initial shellcode execution in a specified number of milliseconds and then invoke the clean up routine to zero out the corresponding memory region and call `NtFreeVirtualMemory` on it.
+* Some C2 implants (like meterpreter and [PoshC2](https://github.com/nettitude/PoshC2) but not Cobalt Strike, for example) allow to clean up the memory region where the initial shellcode was triggered from without terminating the active session. For that purpose the `/timeout` option exists: when its value is non-zero, the operator forces the `NtWaitForSingleObject` API call to time out initial shellcode execution in a specified number of milliseconds and then invoke the clean up routine to zero out the corresponding memory region and call `NtFreeVirtualMemory` on it.
 * If you want to set initial protection for the memory region where the shellcode resides as **NA** (PAGE_NOACCESS, `0x01`) to evade potential in-memory scan, use the `/flipSleep` option to delay thread execution for a specified amount of milliseconds (same as in [RemoteThreadSuspended](#RemoteThreadSuspended)).
 * Using the `/fluctuate` option you can instruct the loader to hook `kernel32.dll!Sleep` function and fluctuate the shellcode memory region with **RW** (PAGE_READWRITE, 0x02) memory obfuscation via XOR encryption on Sleep to evade in-memory scans hunting for known implant signatures. Heavily adopted from [ShellcodeFluctuation](https://github.com/mgeeky/ShellcodeFluctuation) PoC.
 
 **Shellcode Fluctuation Demo**
 
-<p align="center">
-  <a href="https://vimeo.com/719398239"><img src="https://user-images.githubusercontent.com/23141800/173198600-7c878e2b-8ba9-4b6a-ae9f-16cfa8a2c83f.png" width="800px" alt="shellcode-fluctuation-demo" /></a>
-</p>
+https://user-images.githubusercontent.com/23141800/178160297-bafacca4-93ee-4656-b042-e67c6fe5d44c.mp4
 
 ### [CurrentThreadUuid](/DInjector/Modules/CurrentThreadUuid.cs)
 
@@ -398,9 +398,10 @@ api:
     3: 'NtWriteVirtualMemory (shellcode)'
     4: 'NtProtectVirtualMemory (PAGE_NOACCESS)'
     5: 'NtCreateThreadEx (CREATE_SUSPENDED)'
-    6: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
-    7: 'NtResumeThread'
-    8: 'NtClose (x2)'
+    6: 'NtDelayExecution (flipSleep)'
+    7: 'NtProtectVirtualMemory (PAGE_EXECUTE_READ)'
+    8: 'NtResumeThread'
+    9: 'NtClose (x2)'
 opsec_safe: true
 references:
   - 'https://labs.f-secure.com/blog/bypassing-windows-defender-runtime-scanning/'
@@ -557,7 +558,7 @@ api:
      4: 'NtWriteVirtualMemory (shim)'
      5: 'NtProtectVirtualMemory (shim, PAGE_EXECUTE_READ)'
      6: 'NtCreateThreadEx (shim)'
-     7: 'NtWaitForSingleObject'
+     7: 'NtWaitForSingleObject (inf)'
      8: 'NtFreeVirtualMemory (allocModule)'
      9: 'NtFreeVirtualMemory (allocShim)'
     10: 'NtProtectVirtualMemory (shellcode, PAGE_READWRITE)'

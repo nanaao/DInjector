@@ -131,15 +131,25 @@ namespace DInjector
                 attributeList);
         }
 
-        public static NTSTATUS NtWaitForSingleObject(IntPtr ObjectHandle, bool Alertable, uint Timeout)
+        public static NTSTATUS NtDelayExecution(bool Alertable, ref Win32.LARGE_INTEGER DelayInterval)
         {
-            IntPtr stub = GetSyscallStub("NtWaitForSingleObject");
+            IntPtr stub = GetSyscallStub("ZwDelayExecution");
+            Delegates.NtDelayExecution ntDelayExecution = (Delegates.NtDelayExecution)Marshal.GetDelegateForFunctionPointer(stub, typeof(Delegates.NtDelayExecution));
+
+            return ntDelayExecution(
+                Alertable,
+                ref DelayInterval);
+        }
+
+        public static NTSTATUS NtWaitForSingleObject(IntPtr ObjectHandle, bool Alertable, ref Win32.LARGE_INTEGER Timeout)
+        {
+            IntPtr stub = GetSyscallStub("ZwWaitForSingleObject");
             Delegates.NtWaitForSingleObject ntWaitForSingleObject = (Delegates.NtWaitForSingleObject)Marshal.GetDelegateForFunctionPointer(stub, typeof(Delegates.NtWaitForSingleObject));
 
             return ntWaitForSingleObject(
                 ObjectHandle,
                 Alertable,
-                Timeout);
+                ref Timeout);
         }
 
         public static NTSTATUS NtFreeVirtualMemory(IntPtr processHandle, ref IntPtr baseAddress, ref IntPtr regionSize, uint freeType)

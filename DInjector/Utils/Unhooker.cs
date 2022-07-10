@@ -90,7 +90,7 @@ namespace DInjector
 
                     if (ish.Section.Contains(".text"))
                     {
-                        Console.WriteLine($"(Unhooker) [>] Unhooking ntdll.dll!{ish.Section}");
+                        Console.WriteLine($"(Unhooker) [>] Unhooking ntdll!{ish.Section}");
 
                         IntPtr hookedSectionAddress = IntPtr.Add(hookedLibAddress, (int)ish.VirtualAddress);
                         IntPtr unhookedSectionAddress = IntPtr.Add(unhookedLibAddress, (int)ish.VirtualAddress);

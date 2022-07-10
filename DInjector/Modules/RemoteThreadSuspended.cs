@@ -120,11 +120,20 @@ namespace DInjector
 
             #endregion
 
-            #region Thread.Sleep
+            #region NtDelayExecution (flipSleep)
 
-            Console.WriteLine($"(RemoteThreadSuspended) [=] Sleeping for {flipSleep} ms ...");
+            Console.WriteLine($"(RemoteThreadSuspended) [=] Delaying execution for {flipSleep} ms before resuming the thread ...");
 
-            System.Threading.Thread.Sleep(flipSleep);
+            Win32.LARGE_INTEGER liFlipSleep = new Win32.LARGE_INTEGER() { QuadPart = (-1) * flipSleep * 10000 };
+
+            ntstatus = Syscalls.NtDelayExecution(
+                true,
+                ref liFlipSleep);
+
+            if (ntstatus == NTSTATUS.Success)
+                Console.WriteLine("(RemoteThreadSuspended) [+] NtDelayExecution, flipSleep");
+            else
+                throw new Exception($"(RemoteThreadSuspended) [-] NtDelayExecution, flipSleep: {ntstatus}");
 
             #endregion
 

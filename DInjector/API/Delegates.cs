@@ -69,10 +69,15 @@ namespace DInjector
             IntPtr attributeList);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate NTSTATUS NtDelayExecution(
+            bool Alertable,
+            ref Win32.LARGE_INTEGER DelayInterval);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate NTSTATUS NtWaitForSingleObject(
             IntPtr ObjectHandle,
             bool Alertable,
-            uint Timeout);
+            ref Win32.LARGE_INTEGER Timeout);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate NTSTATUS NtFreeVirtualMemory(
@@ -192,10 +197,10 @@ namespace DInjector
             IntPtr lpParameter);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void DeleteFiber(IntPtr lpFiber);
+        public delegate void SwitchToFiber(IntPtr lpFiber);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void SwitchToFiber(IntPtr lpFiber);
+        public delegate void DeleteFiber(IntPtr lpFiber);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         public delegate bool InitializeProcThreadAttributeList(
