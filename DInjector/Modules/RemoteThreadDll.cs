@@ -24,9 +24,9 @@ namespace DInjector
                 ref ci);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(RemoteThreadDll) [+] NtOpenProcess");
+                Console.WriteLine("(RemoteThreadDll) [+] NtOpnPrcss");
             else
-                throw new Exception($"(RemoteThreadDll) [-] NtOpenProcess: {ntstatus}");
+                throw new Exception($"(RemoteThreadDll) [-] NtOpnPrcss: {ntstatus}");
 
             if (remoteAm51)
                 AM51.Patch(
@@ -57,9 +57,9 @@ namespace DInjector
                         ref oldProtect);
 
                     if (ntstatus == NTSTATUS.Success)
-                        Console.WriteLine("(RemoteThreadDll) [+] NtProtectVirtualMemory, PAGE_READWRITE");
+                        Console.WriteLine("(RemoteThreadDll) [+] NtPrtctVrtlMmry, PAGE_READWRITE");
                     else
-                        throw new Exception($"(RemoteThreadDll) [-] NtProtectVirtualMemory, PAGE_READWRITE: {ntstatus}");
+                        throw new Exception($"(RemoteThreadDll) [-] NtPrtctVrtlMmry, PAGE_READWRITE: {ntstatus}");
 
                     #endregion
 
@@ -78,9 +78,9 @@ namespace DInjector
                         ref bytesWritten);
 
                     if (ntstatus == NTSTATUS.Success)
-                        Console.WriteLine("(RemoteThreadDll) [+] NtWriteVirtualMemory, shellcode");
+                        Console.WriteLine("(RemoteThreadDll) [+] NtWrtVrtlMmry, shellcode");
                     else
-                        throw new Exception($"(RemoteThreadDll) [-] NtWriteVirtualMemory, shellcode: {ntstatus}");
+                        throw new Exception($"(RemoteThreadDll) [-] NtWrtVrtlMmry, shellcode: {ntstatus}");
 
                     Marshal.FreeHGlobal(buffer);
 
@@ -100,9 +100,9 @@ namespace DInjector
                         ref tmpProtect);
 
                     if (ntstatus == NTSTATUS.Success)
-                        Console.WriteLine("(RemoteThreadDll) [+] NtProtectVirtualMemory, oldProtect");
+                        Console.WriteLine("(RemoteThreadDll) [+] NtPrtctVrtlMmry, oldProtect");
                     else
-                        throw new Exception($"(RemoteThreadDll) [-] NtProtectVirtualMemory, oldProtect: {ntstatus}");
+                        throw new Exception($"(RemoteThreadDll) [-] NtPrtctVrtlMmry, oldProtect: {ntstatus}");
 
                     #endregion
 
@@ -124,9 +124,9 @@ namespace DInjector
                         IntPtr.Zero);
 
                     if (ntstatus == NTSTATUS.Success)
-                        Console.WriteLine("(RemoteThreadDll) [+] NtCreateThreadEx");
+                        Console.WriteLine("(RemoteThreadDll) [+] NtCrtThrdEx");
                     else
-                        throw new Exception($"(RemoteThreadDll) [-] NtCreateThreadEx: {ntstatus}");
+                        throw new Exception($"(RemoteThreadDll) [-] NtCrtThrdEx: {ntstatus}");
 
                     #endregion
 

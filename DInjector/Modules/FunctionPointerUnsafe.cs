@@ -34,9 +34,9 @@ namespace DInjector
                         ref oldProtect);
 
                     if (ntstatus == NTSTATUS.Success)
-                        Console.WriteLine("(FunctionPointerUnsafe) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READ");
+                        Console.WriteLine("(FunctionPointerUnsafe) [+] NtPrtctVrtlMmry, PAGE_EXECUTE_READ");
                     else
-                        throw new Exception($"(FunctionPointerUnsafe) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READ: {ntstatus}");
+                        throw new Exception($"(FunctionPointerUnsafe) [-] NtPrtctVrtlMmry, PAGE_EXECUTE_READ: {ntstatus}");
 
                     #endregion
 

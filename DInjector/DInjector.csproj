@@ -31,7 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <LangVersion>latestmajor</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
@@ -80,7 +80,6 @@
     <Compile Include="Modules\CurrentThread.cs" />
     <Compile Include="Modules\TimeFormats.cs" />
     <Compile Include="Modules\FunctionPointer.cs" />
-    <Compile Include="Modules\FunctionPointerUnsafe.cs" />
     <Compile Include="Modules\ModuleStomping.cs" />
     <Compile Include="Modules\ProcessHollowing.cs" />
     <Compile Include="Modules\RemoteThreadKernelCB.cs" />

