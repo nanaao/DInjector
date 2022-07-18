@@ -9,7 +9,7 @@ DInjector
     (_))_(_))  )\ |(_)/((_))\(_))/ )\(()\      ((_))  _
      |   \_ _|_(_/( !(_)) ((_) |_ ((_)((_)     _| | || |
      | |) | || ' \)) / -_) _||  _/ _ \ '_|  _/ _` | || |
-     |___/___|_||_|/ \___\__| \__\___/_|   (_)__,_|_||_|
+     |___/___|_||_|/ \___\__| \__\___/_|   (_)__,_|_||_| (dev)
                  |__/-----------------------------------
                                                 K E E P
                                                 C A L M
@@ -27,14 +27,15 @@ Features:
 * Based entirely on D/Invoke API (using [minified fork](https://github.com/snovvcrash/DInvoke/tree/api_hashing) of [DInvoke-dev](https://github.com/TheWover/DInvoke/tree/dev))
 * API and syscalls resolution via hashing
 * Encrypted payloads which can be invoked from a URL or passed in base64 as an argument
-* PPID Spoofing and [blocking non-Microsoft DLLs](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute) (stolen from [TikiTorch](https://github.com/rasta-mouse/TikiTorch))
+* PPID spoofing and [blocking non-Microsoft DLLs](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute) (stolen from [TikiTorch](https://github.com/rasta-mouse/TikiTorch))
 * Flexible adjustment options for memory protection values
 * Shellcode fluctuation with **RW** and memory obfuscation (adopted from [ShellcodeFluctuation](https://github.com/mgeeky/ShellcodeFluctuation))
 * Thread stack spoofing via [fibers switching](https://docs.microsoft.com/ru-ru/windows/win32/api/winbase/nf-winbase-switchtofiber) (**NOT STABLE**)
-* Built-in AMSI bypass for local and remote processes, amsi.dll can be optionally force loaded
+* AMSI bypassing for local and remote processes (amsi.dll can be optionally force loaded)
+* ETW blocking
+* Ntdll.dll unhooking
 * Simple sandbox detection & evasion
 * Prime numbers calculation to emulate sleep for in-memory scan evasion
-* Ntdll.dll unhooking
 * Cobalt Strike integration
 
 > **DISCLAIMER.** All information contained in this repository is provided for educational and research purposes only. The author is not responsible for any illegal use of this tool.
@@ -70,7 +71,7 @@ Features:
 
 ## Basic Usage
 
-1. Compile the project in Visual Studio (1) or via [OffensivePipeline](https://github.com/snovvcrash/OffensivePipeline) (2):
+1. Compile the project in Visual Studio (1) or via [OffensivePipeline](https://github.com/snovvcrash/OffensivePipeline/releases/tag/v0.8.2) (2):
 
 ```console
 PS (1) > git clone -b dev --single-branch https://github.com/snovvcrash/DInjector.git
@@ -137,27 +138,28 @@ $detonator > .\Detonator.cs
 
 ## Arguments
 
-| Name           | Techniques                                                                                                                                                                                 | Required | Default Value          | Example Values                                                                    | Description                                                                                                                                                   |
-|----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|------------------------|-----------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `/sc`          | All                                                                                                                                                                                        | YES      | -                      | `http://10.10.13.37/enc`                                                          | Sets shellcode path (can be loaded from URL or as a base64 string).                                                                                           |
-| `/p`           | All                                                                                                                                                                                        | YES      | -                      | `Passw0rd!`                                                                       | Sets password to decrypt the shellcode.                                                                                                                       |
-| `/protect`     | CurrentThread                                                                                                                                                                              | NO       | `RX`                   | `RX` / `RWX`                                                                      | Sets memory protection for the shellcode.                                                                                                                     |
-| `/flipSleep`   | CurrentThread                                                                                                                                                                              | NO       | `0` (do NOT flip)      | `10000`                                                                           | Sets timeout for NtDelayExecution (ms) to delay execution with PAGE_NOACCESS on the shellcode before resuming the thread.                                     |
-| `/timeout`     | CurrentThread                                                                                                                                                                              | NO       | `0` (serve forever)    | `5000`                                                                            | Sets timeout for NtWaitForSingleObject (ms) to wait before doing extra cleanup.                                                                               |
-| `/fluctuate`   | CurrentThread                                                                                                                                                                              | NO       | `0` (do NOT fluctuate) | `RW`                                                                              | Sets memory protection for the shellcode to fluctuate on Sleep with.                                                                                          |
-| `/spoofStack`  | CurrentThread                                                                                                                                                                              | NO       | `False`                | `True` / `False`                                                                  | Spoofs current thread stack frame to hide the presence of the shellcode.                                                                                      |
-| `/image`       | RemoteThreadKernelCB, RemoteThreadAPC, RemoteThreadContext, ProcessHollowing, ModuleStomping                                                                                               | YES      | -                      | `C:\Windows\System32\svchost.exe`, `C:\Program*Files\Mozilla*Firefox\firefox.exe` | Sets path to the image of a newly spawned sacrifical process to inject into. If there're spaces in the image path, replace them with asterisk (*) characters. |
-| `/pid`         | RemoteThread, RemoteThreadDll, RemoteThreadView, RemoteThreadSuspended                                                                                                                     | YES      | -                      | `1337`                                                                            | Sets existing process ID to inject into.                                                                                                                      |
-| `/ppid`        | RemoteThreadKernelCB, RemoteThreadAPC, RemoteThreadContext, ProcessHollowing, ModuleStomping                                                                                               | NO       | `0`                    | `1337`                                                                            | Sets parent process ID to spoof the original value with.                                                                                                      |
-| `/dll`         | RemoteThreadDll                                                                                                                                                                            | YES      | -                      | `msvcp_win.dll`                                                                   | Sets loaded DLL name to overwrite its .text section for storing the shellcode.                                                                                |
-| `/stompDll`    | ModuleStomping                                                                                                                                                                             | YES      | -                      | `xpsservices.dll`                                                                 | Sets name of the DLL to stomp.                                                                                                                                |
-| `/stompExport` | ModuleStomping                                                                                                                                                                             | YES      | -                      | `DllCanUnloadNow`                                                                 | Sets exported function name to overwrite.                                                                                                                     |
-| `/sleep`       | All                                                                                                                                                                                        | NO       | `0`                    | `30`                                                                              | Sets number of seconds (approx.) to sleep before execution (10s-60s).                                                                                         |
-| `/blockDlls`   | RemoteThreadKernelCB, RemoteThreadAPC, RemoteThreadContext, ProcessHollowing, ModuleStomping                                                                                               | NO       | `False`                | `True` / `False`                                                                  | Blocks 3rd-party (non-Microsoft) DLLs.                                                                                                                        |
-| `/am51`        | All                                                                                                                                                                                        | NO       | `False`                | `True` / `False` / `Force`                                                        | Applies AMSI bypass in current process. amsi.dll can be loaded forcibly.                                                                                      |
-| `/remoteAm51`  | RemoteThreadKernelCB, RemoteThreadAPC, RemoteThreadContext, ProcessHollowing, ModuleStomping, RemoteThreadKernelCB, RemoteThreadAPC, RemoteThreadContext, ProcessHollowing, ModuleStomping | NO       | `False`                | `True` / `False` / `Force`                                                        | Applies AMSI bypass in remote process. amsi.dll can be loaded forcibly.                                                                                       |
-| `/unhook`      | All                                                                                                                                                                                        | NO       | `False`                | `True` / `False`                                                                  | Unhooks ntdll.dll (loads a clean copy from disk).                                                                                                             |
-| `/debug`       | All                                                                                                                                                                                        | NO       | `False`                | `True` / `False`                                                                  | Print debug messages.                                                                                                                                         |
+| Name           | Techniques                                                                                                                                                                                 | Required | Default Value          | Example Values                                                                    | Description                                                                                                                                                  |
+|----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|------------------------|-----------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `/sc`          | All                                                                                                                                                                                        | YES      | -                      | `http://10.10.13.37/enc`                                                          | Sets shellcode path (can be loaded from URL or as a base64 string)                                                                                           |
+| `/p`           | All                                                                                                                                                                                        | YES      | -                      | `Passw0rd!`                                                                       | Sets password to decrypt the shellcode                                                                                                                       |
+| `/protect`     | CurrentThread                                                                                                                                                                              | NO       | `RX`                   | `RX` / `RWX`                                                                      | Sets memory protection for the shellcode                                                                                                                     |
+| `/flipSleep`   | CurrentThread                                                                                                                                                                              | NO       | `0` (do NOT flip)      | `10000`                                                                           | Sets timeout for NtDelayExecution (ms) to delay execution with PAGE_NOACCESS on the shellcode before resuming the thread                                     |
+| `/timeout`     | CurrentThread                                                                                                                                                                              | NO       | `0` (serve forever)    | `5000`                                                                            | Sets timeout for NtWaitForSingleObject (ms) to wait before doing extra cleanup                                                                               |
+| `/fluctuate`   | CurrentThread                                                                                                                                                                              | NO       | `0` (do NOT fluctuate) | `RW`                                                                              | Sets memory protection for the shellcode to fluctuate on Sleep with                                                                                          |
+| `/spoofStack`  | CurrentThread                                                                                                                                                                              | NO       | `False`                | `True` / `False`                                                                  | Spoofs current thread stack frame to hide the presence of the shellcode                                                                                      |
+| `/image`       | RemoteThreadKernelCB, RemoteThreadAPC, RemoteThreadContext, ProcessHollowing, ModuleStomping                                                                                               | YES      | -                      | `C:\Windows\System32\svchost.exe`, `C:\Program*Files\Mozilla*Firefox\firefox.exe` | Sets path to the image of a newly spawned sacrifical process to inject into. If there're spaces in the image path, replace them with asterisk (*) characters |
+| `/pid`         | RemoteThread, RemoteThreadDll, RemoteThreadView, RemoteThreadSuspended                                                                                                                     | YES      | -                      | `1337`                                                                            | Sets existing process ID to inject into                                                                                                                      |
+| `/ppid`        | RemoteThreadKernelCB, RemoteThreadAPC, RemoteThreadContext, ProcessHollowing, ModuleStomping                                                                                               | NO       | `0`                    | `1337`                                                                            | Sets parent process ID to spoof the original value with                                                                                                      |
+| `/dll`         | RemoteThreadDll                                                                                                                                                                            | YES      | -                      | `msvcp_win.dll`                                                                   | Sets loaded DLL name to overwrite its .text section for storing the shellcode                                                                                |
+| `/stompDll`    | ModuleStomping                                                                                                                                                                             | YES      | -                      | `xpsservices.dll`                                                                 | Sets name of the DLL to stomp                                                                                                                                |
+| `/stompExport` | ModuleStomping                                                                                                                                                                             | YES      | -                      | `DllCanUnloadNow`                                                                 | Sets exported function name to overwrite                                                                                                                     |
+| `/sleep`       | All                                                                                                                                                                                        | NO       | `0`                    | `30`                                                                              | Sets number of seconds (approx.) to sleep before execution (10s-60s)                                                                                         |
+| `/blockDlls`   | RemoteThreadKernelCB, RemoteThreadAPC, RemoteThreadContext, ProcessHollowing, ModuleStomping                                                                                               | NO       | `False`                | `True` / `False`                                                                  | Blocks 3rd-party (non-Microsoft) DLLs                                                                                                                        |
+| `/am51`        | All                                                                                                                                                                                        | NO       | `False`                | `True` / `False` / `Force`                                                        | Applies AMSI bypass in current process ("AmsiScanBuffer" patch), amsi.dll can be loaded forcibly                                                             |
+| `/remoteAm51`  | RemoteThreadKernelCB, RemoteThreadAPC, RemoteThreadContext, ProcessHollowing, ModuleStomping, RemoteThreadKernelCB, RemoteThreadAPC, RemoteThreadContext, ProcessHollowing, ModuleStomping | NO       | `False`                | `True` / `False` / `Force`                                                        | Applies AMSI bypass in remote process ("AmsiScanBuffer" patch), amsi.dll can be loaded forcibly                                                              |
+| `/etw   `      | All                                                                                                                                                                                        | NO       | `False`                | `True` / `False`                                                                  | Applies ETW block ("EtwEventWrite" patch)                                                                                                                    |
+| `/unhook`      | All                                                                                                                                                                                        | NO       | `False`                | `True` / `False`                                                                  | Unhooks ntdll.dll (loads a clean copy from disk)                                                                                                             |
+| `/debug`       | All                                                                                                                                                                                        | NO       | `False`                | `True` / `False`                                                                  | Print debug messages                                                                                                                                         |
 
 ## Techniques
 
@@ -583,7 +585,7 @@ references:
 ```yaml
 module_name: 'all'
 arguments:
-description:
+description: AMSI bypass.
 api:
   - dynamic_invocation:
   - syscalls:
@@ -597,6 +599,39 @@ opsec_safe:
 references:
 ```
 
+#### [ETW](/DInjector/Utils/ETW.cs)
+
+```yaml
+module_name: 'all'
+arguments:
+description: ETW block.
+api:
+  - dynamic_invocation:
+  - syscalls:
+    1: 'NtProtectVirtualMemory (PAGE_EXECUTE_READWRITE)'
+    2: 'NtProtectVirtualMemory (oldProtect)'
+opsec_safe:
+references:
+  - 'https://github.com/Flangvik/NetLoader/blob/5a58cce49d07d1165a1768f46d85e449c4fc8503/Source/Program.cs#L241-L258'
+```
+
+#### [Unhooker](/DInjector/Utils/Unhooker.cs)
+
+```yaml
+module_name: 'all'
+arguments:
+description: Ntdll.dll unhook.
+api:
+  - dynamic_invocation:
+    1: 'VirtualProtect (PAGE_EXECUTE_READWRITE)'
+    2: 'CopyMemory'
+    3: 'VirtualProtect (oldProtect)'
+  - syscalls:
+opsec_safe:
+references:
+  - 'https://github.com/TheWover/DInvoke/blob/0530886deebd1a2e5bd8b9eb8e1d8ce87f4ca5e4/DInvoke/DInvoke/DynamicInvoke/Generic.cs'
+```
+
 #### [SpawnProcess](/DInjector/Utils/SpawnProcess.cs)
 
 ```yaml
@@ -607,7 +642,7 @@ module_name: |
   processhollowing
   modulestomping
 arguments:
-description:
+description: Spawn process helper.
 api:
   - dynamic_invocation:
     1: 'InitializeProcThreadAttributeList'
@@ -618,23 +653,6 @@ api:
 opsec_safe:
 references:
   - 'https://offensivedefence.co.uk/posts/ppidspoof-blockdlls-dinvoke/'
-```
-
-#### [Unhooker](/DInjector/Utils/Unhooker.cs)
-
-```yaml
-module_name: 'all'
-arguments:
-description:
-api:
-  - dynamic_invocation:
-    1: 'VirtualProtect (PAGE_EXECUTE_READWRITE)'
-    2: 'CopyMemory'
-    3: 'VirtualProtect (oldProtect)'
-  - syscalls:
-opsec_safe:
-references:
-  - 'https://github.com/TheWover/DInvoke/blob/0530886deebd1a2e5bd8b9eb8e1d8ce87f4ca5e4/DInvoke/DInvoke/DynamicInvoke/Generic.cs'
 ```
 
 ## Credits

